@@ -209,33 +209,99 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script>
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        document.addEventListener("DOMContentLoaded", async () => {
+            const apiBase = "/api/user";
+            const form = document.getElementById("profileForm");
 
-            // Simulate saving profile
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
+            async function loadProfile() {
+                try {
+                    const res = await fetch(`${apiBase}/profile`);
+                    const data = await res.json();
 
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-            submitBtn.disabled = true;
+                    if (!data.isAuthenticated) {
+                        window.location.href = "/account/login";
+                        return;
+                    }
 
-            setTimeout(() => {
-                // Show success message
-                const alert = document.createElement('div');
-                alert.className = 'alert alert-success alert-dismissible fade show mt-3';
-                alert.innerHTML = `
-                    <i class="fas fa-check-circle me-2"></i>
-                    <strong>Success!</strong> Your profile has been updated.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                this.parentNode.insertBefore(alert, this.nextSibling);
+                    // Fill form
+                    document.getElementById("displayName").value = data.name || "";
+                    document.getElementById("email").value = data.email || "";
+                    document.querySelector(".fw-bold.mb-1").textContent = data.name || "User";
+                    document.querySelector(".text-muted.mb-2").textContent = data.roles?.join(", ") || "Member";
+                    document.querySelector(".badge").textContent = data.isAdmin ? "Admin" : "Pro Plan";
+                    document.querySelector(".text-muted.small").textContent =
+                        `Member since ${new Date(data.createdAt).toLocaleDateString()}`;
 
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }, 1500);
+                    const avatarDiv = document.querySelector(".avatar-placeholder");
+                    if (data.avatar) {
+                        avatarDiv.innerHTML = `<img src="${data.avatar}" alt="Avatar" class="rounded-circle" width="80" height="80">`;
+                    }
+
+                    // Optional profile extras
+                    document.getElementById("jobTitle").value = data.jobTitle || "";
+                    document.getElementById("company").value = data.company || "";
+                    document.getElementById("bio").value = data.bio || "";
+                    document.getElementById("website").value = data.website || "";
+                    document.getElementById("location").value = data.location || "";
+                } catch (err) {
+                    console.error("Error loading profile:", err);
+                }
+            }
+
+            // Load profile initially
+            await loadProfile();
+
+            // Save handler
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                submitBtn.disabled = true;
+
+                const payload = {
+                    displayName: document.getElementById("displayName").value,
+                    jobTitle: document.getElementById("jobTitle").value,
+                    company: document.getElementById("company").value,
+                    bio: document.getElementById("bio").value,
+                    website: document.getElementById("website").value,
+                    location: document.getElementById("location").value
+                };
+
+                try {
+                    const res = await fetch(`${apiBase}/profile/update`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await res.json();
+
+                    const alert = document.createElement("div");
+                    alert.className = `alert alert-${result.success ? "success" : "danger"} alert-dismissible fade show mt-3`;
+                    alert.innerHTML = `
+                        <i class="fas fa-${result.success ? "check-circle" : "exclamation-triangle"} me-2"></i>
+                        <strong>${result.success ? "Success!" : "Error:"}</strong> ${result.message || "Profile update failed."}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    form.parentNode.insertBefore(alert, form.nextSibling);
+
+                    if (result.success) {
+                        setTimeout(() => alert.remove(), 4000);
+                        await loadProfile(); // reload latest info
+                    }
+                } catch (err) {
+                    console.error("Save error:", err);
+                    alert("Something went wrong while saving your profile.");
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
         });
     </script>
 }
+

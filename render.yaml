@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: DevToolsSuit
-    env: docker
-    plan: free
-    envVars:
-      - key: ASPNETCORE_URLS
-        value: "http://*:10000"

@@ -7,6 +7,11 @@ namespace DevToolsSuite.Models
     {
         [StringLength(100)]
         public string? DisplayName { get; set; }
+        public string? JobTitle { get; set; }
+        public string? Company { get; set; }
+        public string? Bio { get; set; }
+        public string? Website { get; set; }
+        public string? Location { get; set; }
 
         [StringLength(20)]
         public string? SubscriptionPlan { get; set; } = "Free";
