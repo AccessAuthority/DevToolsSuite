@@ -1,6 +1,7 @@
 services:
   - type: web
     name: DevToolsSuit
+    env: docker
     plan: free
     buildCommand: "dotnet publish -c Release -o out"
     startCommand: "dotnet out/DevToolsSuit.dll"
