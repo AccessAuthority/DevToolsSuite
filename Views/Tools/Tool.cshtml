@@ -350,693 +350,862 @@
     </div>
 </script>
 
-@section Scripts {
-    <script>
-        // Enhanced tool configuration with validation
-        const toolConfig = {
-            'json-formatter': {
-                template: 'jsonFormatterTemplate',
-                description: 'Format and validate JSON data with syntax highlighting',
-                info: 'This tool helps you format, validate, and beautify JSON data. It provides syntax highlighting and error detection to ensure your JSON is properly structured.',
-                maxInputLength: 50000,
-                requiresInput: true
-            },
-            'jwt-decoder': {
-                template: 'jwtDecoderTemplate',
-                description: 'Decode and inspect JWT tokens',
-                info: 'Decode JSON Web Tokens (JWT) to inspect their header and payload contents. This is useful for debugging authentication tokens and understanding their structure.',
-                maxInputLength: 50000,
-                requiresInput: true
-            },
-            'base64-converter': {
-                template: 'base64ConverterTemplate',
-                description: 'Encode and decode Base64 strings',
-                info: 'Convert text to Base64 encoding and decode Base64 back to text. Useful for data encoding in URLs, APIs, and various web applications.',
-                maxInputLength: 50000,
-                requiresInput: true
-            },
-            'regex-tester': {
-                template: 'regexTesterTemplate',
-                description: 'Test regular expressions with live matching',
-                info: 'Test and debug regular expressions with real-time matching. See matches, groups, and positions with detailed output.',
-                maxInputLength: 50000,
-                maxPatternLength: 1000,
-                requiresInput: false
-            },
-            'yaml-json-converter': {
-                template: 'yamlJsonConverterTemplate',
-                description: 'Convert between YAML and JSON formats',
-                info: 'Easily convert between YAML and JSON formats. Perfect for configuration files, API development, and data transformation.',
-                maxInputLength: 50000,
-                requiresInput: true
-            },
-            'url-encoder': {
-                template: 'urlEncoderTemplate',
-                description: 'Encode and decode URL components',
-                info: 'URL encode and decode strings to ensure proper formatting for web addresses and API parameters.',
-                maxInputLength: 50000,
-                requiresInput: true
-            },
-            'timestamp-converter': {
-                template: 'timestampConverterTemplate',
-                description: 'Convert between timestamps and human-readable dates',
-                info: 'Convert Unix timestamps to readable dates and vice versa. Supports seconds, milliseconds, and various date formats.',
-                maxInputLength: 100,
-                requiresInput: false
-            },
-            'text-diff': {
-                template: 'textDiffTemplate',
-                description: 'Compare text and find differences',
-                info: 'Compare two text inputs and highlight differences between them. Useful for code reviews, document comparison, and change tracking.',
-                maxInputLength: 50000,
-                requiresInput: false
-            },
-            'markdown-preview': {
-                template: 'markdownPreviewTemplate',
-                description: 'Preview Markdown in real-time',
-                info: 'Write Markdown and see the rendered HTML output in real-time. Perfect for documentation and content creation.',
-                maxInputLength: 50000,
-                requiresInput: true
-            },
-            'uuid-generator': {
-                template: 'uuidGeneratorTemplate',
-                description: 'Generate UUIDs/GUIDs',
-                info: 'Generate random UUIDs (Universally Unique Identifiers) for use in databases, APIs, and distributed systems.',
-                maxInputLength: 0,
-                requiresInput: false
+<script>
+    // Enhanced tool configuration with validation
+    const toolConfig = {
+        'json-formatter': {
+            template: 'jsonFormatterTemplate',
+            description: 'Format and validate JSON data with syntax highlighting',
+            info: 'This tool helps you format, validate, and beautify JSON data. It provides syntax highlighting and error detection to ensure your JSON is properly structured.',
+            maxInputLength: 50000,
+            requiresInput: true
+        },
+        'jwt-decoder': {
+            template: 'jwtDecoderTemplate',
+            description: 'Decode and inspect JWT tokens',
+            info: 'Decode JSON Web Tokens (JWT) to inspect their header and payload contents. This is useful for debugging authentication tokens and understanding their structure.',
+            maxInputLength: 50000,
+            requiresInput: true
+        },
+        'base64-converter': {
+            template: 'base64ConverterTemplate',
+            description: 'Encode and decode Base64 strings',
+            info: 'Convert text to Base64 encoding and decode Base64 back to text. Useful for data encoding in URLs, APIs, and various web applications.',
+            maxInputLength: 50000,
+            requiresInput: true
+        },
+        'regex-tester': {
+            template: 'regexTesterTemplate',
+            description: 'Test regular expressions with live matching',
+            info: 'Test and debug regular expressions with real-time matching. See matches, groups, and positions with detailed output.',
+            maxInputLength: 50000,
+            maxPatternLength: 1000,
+            requiresInput: false
+        },
+        'yaml-json-converter': {
+            template: 'yamlJsonConverterTemplate',
+            description: 'Convert between YAML and JSON formats',
+            info: 'Easily convert between YAML and JSON formats. Perfect for configuration files, API development, and data transformation.',
+            maxInputLength: 50000,
+            requiresInput: true
+        },
+        'url-encoder': {
+            template: 'urlEncoderTemplate',
+            description: 'Encode and decode URL components',
+            info: 'URL encode and decode strings to ensure proper formatting for web addresses and API parameters.',
+            maxInputLength: 50000,
+            requiresInput: true
+        },
+        'timestamp-converter': {
+            template: 'timestampConverterTemplate',
+            description: 'Convert between timestamps and human-readable dates',
+            info: 'Convert Unix timestamps to readable dates and vice versa. Supports seconds, milliseconds, and various date formats.',
+            maxInputLength: 100,
+            requiresInput: false
+        },
+        'text-diff': {
+            template: 'textDiffTemplate',
+            description: 'Compare text and find differences',
+            info: 'Compare two text inputs and highlight differences between them. Useful for code reviews, document comparison, and change tracking.',
+            maxInputLength: 50000,
+            requiresInput: false
+        },
+        'markdown-preview': {
+            template: 'markdownPreviewTemplate',
+            description: 'Preview Markdown in real-time',
+            info: 'Write Markdown and see the rendered HTML output in real-time. Perfect for documentation and content creation.',
+            maxInputLength: 50000,
+            requiresInput: true
+        },
+        'uuid-generator': {
+            template: 'uuidGeneratorTemplate',
+            description: 'Generate UUIDs/GUIDs',
+            info: 'Generate random UUIDs (Universally Unique Identifiers) for use in databases, APIs, and distributed systems.',
+            maxInputLength: 0,
+            requiresInput: false
+        }
+    };
+
+    // Application state
+    const AppState = {
+        currentTool: null,
+        isProcessing: false,
+        lastOutput: '',
+        eventListeners: []
+    };
+
+    // Utility functions
+    const Utils = {
+        escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        },
+
+        showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingAlert = document.querySelector('.alert-dismissible');
+            if (existingAlert) {
+                existingAlert.remove();
             }
-        };
 
-        // Application state
-        const AppState = {
-            currentTool: null,
-            isProcessing: false,
-            lastOutput: '',
-            eventListeners: []
-        };
+            const alertClass = {
+                'success': 'alert-success',
+                'error': 'alert-danger',
+                'warning': 'alert-warning',
+                'info': 'alert-info'
+            }[type] || 'alert-info';
 
-        // Utility functions
-        const Utils = {
-            escapeHtml(unsafe) {
-                if (!unsafe) return '';
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            },
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    ${this.escapeHtml(message)}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
 
-            showNotification(message, type = 'info') {
-                // Remove existing notifications
-                const existingAlert = document.querySelector('.alert-dismissible');
-                if (existingAlert) {
-                    existingAlert.remove();
-                }
+            const container = document.querySelector('.container-fluid');
+            container.insertAdjacentHTML('afterbegin', alertHtml);
+        },
 
-                const alertClass = {
-                    'success': 'alert-success',
-                    'error': 'alert-danger',
-                    'warning': 'alert-warning',
-                    'info': 'alert-info'
-                }[type] || 'alert-info';
+        setLoading(button, loading) {
+            if (!button) return;
 
-                const alertHtml = `
-                    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                        ${this.escapeHtml(message)}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                `;
-
-                const container = document.querySelector('.container-fluid');
-                container.insertAdjacentHTML('afterbegin', alertHtml);
-            },
-
-            setLoading(button, loading) {
-                if (!button) return;
-
-                if (loading) {
-                    button.disabled = true;
-                    const originalText = button.innerHTML;
-                    button.setAttribute('data-original-text', originalText);
-                    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-                } else {
-                    button.disabled = false;
-                    const originalText = button.getAttribute('data-original-text');
-                    if (originalText) {
-                        button.innerHTML = originalText;
-                    }
-                }
-            },
-
-            validateInput(input, maxLength = 50000, required = true) {
-                if (required && (!input || !input.trim())) {
-                    return 'Input cannot be empty';
-                }
-                if (maxLength > 0 && input.length > maxLength) {
-                    return `Input too long. Maximum ${maxLength} characters allowed.`;
-                }
-                return null;
-            }
-        };
-
-        // API service - COMPLETELY FIXED
-        const ApiService = {
-            async processTool(toolSlug, data) {
-                const startTime = Date.now();
-                const outputElement = document.getElementById('output');
-                const processingTimeElement = document.getElementById('processingTime');
-
-                try {
-                    AppState.isProcessing = true;
-                    outputElement.textContent = 'Processing...';
-                    outputElement.className = 'p-3 bg-warning bg-opacity-25 rounded border';
-                    processingTimeElement.textContent = '';
-                    document.getElementById('additionalInfo').textContent = '';
-
-                    // FIXED: Use the new API controller structure
-                    const requestData = {
-                        Input: data.input || '',
-                        Options: {},
-                        SaveResult: data.saveResult || false
-                    };
-
-                    // Add options based on tool type
-                    if (data.encode !== undefined) requestData.Options.encode = data.encode;
-                    if (data.format !== undefined) requestData.Options.format = data.format;
-                    if (data.validate !== undefined) requestData.Options.validate = data.validate;
-                    if (data.toJson !== undefined) requestData.Options.toJson = data.toJson;
-                    if (data.count !== undefined) requestData.Options.count = data.count;
-                    if (data.pattern !== undefined) requestData.Options.pattern = data.pattern;
-                    if (data.flags !== undefined) requestData.Options.flags = data.flags;
-                    if (data.input2 !== undefined) requestData.Options.input2 = data.input2;
-
-                    console.log('🔍 Sending request:', { toolSlug, requestData });
-
-                    const response = await fetch(`/api/tools/${toolSlug}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(requestData)
-                    });
-
-                    const responseText = await response.text();
-                    let result;
-
-                    try {
-                        result = JSON.parse(responseText);
-                    } catch (parseError) {
-                        console.error('Failed to parse response:', responseText);
-                        throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}`);
-                    }
-
-                    const processingTime = Date.now() - startTime;
-
-                    console.log('🔍 Received response:', result);
-
-                    if (!response.ok) {
-                        const errorDetails = result.error || result.message || `HTTP ${response.status}`;
-                        throw new Error(errorDetails);
-                    }
-
-                    // Handle the new API response structure
-                    if (result.success) {
-                        const output = result.data?.output || result.output || 'Success';
-                        const additionalData = result.data?.additionalData || result.additionalData;
-
-                        AppState.lastOutput = output;
-
-                        // Handle HTML output for markdown preview
-                        if (toolSlug === 'markdown-preview') {
-                            outputElement.innerHTML = output;
-                        } else {
-                            outputElement.textContent = output;
-                        }
-
-                        outputElement.className = 'p-3 bg-success bg-opacity-10 rounded border';
-                        processingTimeElement.textContent = `Processed in ${processingTime}ms`;
-
-                        if (additionalData) {
-                            document.getElementById('additionalInfo').textContent = additionalData;
-                        }
-
-                        // Enable output buttons
-                        document.getElementById('copyOutputBtn').disabled = false;
-                        document.getElementById('downloadOutputBtn').disabled = false;
-                        document.getElementById('saveTool').disabled = false;
-
-                        Utils.showNotification('Tool processed successfully', 'success');
-                    } else {
-                        const error = result.error || result.message || 'Unknown error occurred';
-                        outputElement.textContent = `Error: ${error}`;
-                        outputElement.className = 'p-3 bg-danger bg-opacity-10 rounded border';
-                        processingTimeElement.textContent = '';
-                        Utils.showNotification(error, 'error');
-                    }
-                } catch (error) {
-                    console.error('💥 Process tool error:', error);
-                    outputElement.textContent = `Error: ${error.message}`;
-                    outputElement.className = 'p-3 bg-danger bg-opacity-10 rounded border';
-                    processingTimeElement.textContent = '';
-                    document.getElementById('additionalInfo').textContent = '';
-                    Utils.showNotification(error.message, 'error');
-                } finally {
-                    AppState.isProcessing = false;
+            if (loading) {
+                button.disabled = true;
+                const originalText = button.innerHTML;
+                button.setAttribute('data-original-text', originalText);
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            } else {
+                button.disabled = false;
+                const originalText = button.getAttribute('data-original-text');
+                if (originalText) {
+                    button.innerHTML = originalText;
                 }
             }
-        };
+        },
 
-        // Tool processing functions - COMPLETELY FIXED
-        const ToolProcessors = {
-            async processJsonFormatter() {
-                const input = document.getElementById('jsonInput').value;
-                const format = document.getElementById('formatJson').checked;
-                const validate = document.getElementById('validateJson').checked;
-                const button = document.getElementById('processJsonBtn');
-
-                const config = toolConfig['json-formatter'];
-                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
-                if (error) {
-                    Utils.showNotification(error, 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('json-formatter', {
-                    input: input,
-                    format: format,
-                    validate: validate
-                });
-                Utils.setLoading(button, false);
-            },
-
-            async processJwtDecoder() {
-                const input = document.getElementById('jwtInput').value;
-                const button = document.getElementById('processJwtBtn');
-
-                const config = toolConfig['jwt-decoder'];
-                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
-                if (error) {
-                    Utils.showNotification(error, 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('jwt-decoder', { input: input });
-                Utils.setLoading(button, false);
-            },
-
-            async processBase64Converter() {
-                const input = document.getElementById('base64Input').value;
-                const action = document.querySelector('input[name="base64Action"]:checked').value;
-                const encode = action === 'encode';
-                const button = document.getElementById('processBase64Btn');
-
-                const config = toolConfig['base64-converter'];
-                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
-                if (error) {
-                    Utils.showNotification(error, 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('base64-converter', {
-                    input: input,
-                    encode: encode
-                });
-                Utils.setLoading(button, false);
-            },
-
-            async processRegexTester() {
-                const input = document.getElementById('regexInput').value;
-                const pattern = document.getElementById('regexPattern').value;
-                const flags = document.getElementById('regexFlags').value;
-                const button = document.getElementById('processRegexBtn');
-
-                if (!pattern.trim()) {
-                    Utils.showNotification('Regex pattern cannot be empty', 'error');
-                    return;
-                }
-
-                const config = toolConfig['regex-tester'];
-                if (pattern.length > config.maxPatternLength) {
-                    Utils.showNotification(`Pattern too long. Maximum ${config.maxPatternLength} characters allowed.`, 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('regex-tester', {
-                    input: input,
-                    pattern: pattern,
-                    flags: flags
-                });
-                Utils.setLoading(button, false);
-            },
-
-            async processYamlJsonConverter() {
-                const input = document.getElementById('yamlJsonInput').value;
-                const action = document.querySelector('input[name="yamlJsonAction"]:checked').value;
-                const toJson = action === 'to-json';
-                const button = document.getElementById('processYamlJsonBtn');
-
-                const config = toolConfig['yaml-json-converter'];
-                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
-                if (error) {
-                    Utils.showNotification(error, 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('yaml-json-converter', {
-                    input: input,
-                    toJson: toJson
-                });
-                Utils.setLoading(button, false);
-            },
-
-            async processUrlEncoder() {
-                const input = document.getElementById('urlInput').value;
-                const action = document.querySelector('input[name="urlAction"]:checked').value;
-                const encode = action === 'encode';
-                const button = document.getElementById('processUrlBtn');
-
-                const config = toolConfig['url-encoder'];
-                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
-                if (error) {
-                    Utils.showNotification(error, 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('url-encoder', {
-                    input: input,
-                    encode: encode
-                });
-                Utils.setLoading(button, false);
-            },
-
-            async processTimestampConverter() {
-                const input = document.getElementById('timestampInput').value;
-                const button = document.getElementById('processTimestampBtn');
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('timestamp-converter', {
-                    input: input || '' // Allow empty for current time
-                });
-                Utils.setLoading(button, false);
-            },
-
-            async processTextDiff() {
-                const left = document.getElementById('diffLeft').value;
-                const right = document.getElementById('diffRight').value;
-                const button = document.getElementById('processTextDiffBtn');
-
-                if (!left.trim() && !right.trim()) {
-                    Utils.showNotification('Please enter text in at least one side', 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('text-diff', {
-                    input: left,
-                    input2: right
-                });
-                Utils.setLoading(button, false);
-            },
-
-            async processMarkdownPreview() {
-                const input = document.getElementById('markdownInput').value;
-                const button = document.getElementById('processMarkdownBtn');
-
-                const config = toolConfig['markdown-preview'];
-                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
-                if (error) {
-                    Utils.showNotification(error, 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                await ApiService.processTool('markdown-preview', { input: input });
-                Utils.setLoading(button, false);
-            },
-
-            async processUuidGenerator() {
-                const count = parseInt(document.getElementById('uuidCount').value) || 1;
-                const button = document.getElementById('processUuidBtn');
-
-                if (count < 1 || count > 100) {
-                    Utils.showNotification('Count must be between 1 and 100', 'error');
-                    return;
-                }
-
-                Utils.setLoading(button, true);
-                // FIXED: UUID generator now uses the correct parameter structure
-                await ApiService.processTool('uuid-generator', {
-                    input: '', // Required field but empty for UUID generator
-                    count: count
-                });
-                Utils.setLoading(button, false);
+        validateInput(input, maxLength = 50000, required = true) {
+            if (required && (!input || !input.trim())) {
+                return 'Input cannot be empty';
             }
-        };
+            if (maxLength > 0 && input.length > maxLength) {
+                return `Input too long. Maximum ${maxLength} characters allowed.`;
+            }
+            return null;
+        },
 
-        // ... [Keep EventManager and initialization code the same] ...
-        // Event management
-        const EventManager = {
-            addEventListeners() {
-                this.removeEventListeners();
+        debugToggleOptions(toolSlug) {
+            console.log(`🔧 Debugging ${toolSlug} toggle options:`);
 
-                // Tool-specific buttons
-                const toolButtons = {
-                    'processJsonBtn': ToolProcessors.processJsonFormatter,
-                    'processJwtBtn': ToolProcessors.processJwtDecoder,
-                    'processBase64Btn': ToolProcessors.processBase64Converter,
-                    'processRegexBtn': ToolProcessors.processRegexTester,
-                    'processYamlJsonBtn': ToolProcessors.processYamlJsonConverter,
-                    'processUrlBtn': ToolProcessors.processUrlEncoder,
-                    'processTimestampBtn': ToolProcessors.processTimestampConverter,
-                    'processTextDiffBtn': ToolProcessors.processTextDiff,
-                    'processMarkdownBtn': ToolProcessors.processMarkdownPreview,
-                    'processUuidBtn': ToolProcessors.processUuidGenerator
-                };
+            if (toolSlug === 'base64-converter') {
+                const action = document.querySelector('input[name="base64Action"]:checked');
+                console.log('Base64 Action:', action?.value, 'Encode:', action?.value === 'encode');
+            }
 
-                Object.entries(toolButtons).forEach(([id, handler]) => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        const eventHandler = () => handler();
-                        element.addEventListener('click', eventHandler);
-                        AppState.eventListeners.push({ element, eventHandler });
-                    }
-                });
+            if (toolSlug === 'url-encoder') {
+                const action = document.querySelector('input[name="urlAction"]:checked');
+                console.log('URL Action:', action?.value, 'Encode:', action?.value === 'encode');
+            }
 
-                // Global buttons
-                const globalHandlers = {
-                    'resetTool': this.clearAll,
-                    'saveTool': this.saveSession,
-                    'clearOutputBtn': this.clearOutput,
-                    'copyOutputBtn': this.copyOutput,
-                    'downloadOutputBtn': this.downloadOutput,
-                    'loadSampleDataBtn': this.loadSampleData,
-                    'clearAllBtn': this.clearAll
-                };
+            if (toolSlug === 'yaml-json-converter') {
+                const action = document.querySelector('input[name="yamlJsonAction"]:checked');
+                console.log('YAML/JSON Action:', action?.value, 'ToJson:', action?.value === 'to-json');
+            }
+        },
 
-                Object.entries(globalHandlers).forEach(([id, handler]) => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        const eventHandler = () => handler();
-                        element.addEventListener('click', eventHandler);
-                        AppState.eventListeners.push({ element, eventHandler });
-                    }
-                });
-
-                // Menu items
-                const copyMenu = document.getElementById('copyOutputMenu');
-                if (copyMenu) {
-                    const eventHandler = (e) => {
-                        e.preventDefault();
-                        this.copyOutput();
-                    };
-                    copyMenu.addEventListener('click', eventHandler);
-                    AppState.eventListeners.push({ element: copyMenu, eventHandler });
+        cleanRequestData(data) {
+            const cleaned = {};
+            Object.keys(data).forEach(key => {
+                if (data[key] !== undefined && data[key] !== null && data[key] !== '') {
+                    cleaned[key] = data[key];
                 }
+            });
+            return cleaned;
+        }
+    };
 
-                const downloadMenu = document.getElementById('downloadOutputMenu');
-                if (downloadMenu) {
-                    const eventHandler = (e) => {
-                        e.preventDefault();
-                        this.downloadOutput();
-                    };
-                    downloadMenu.addEventListener('click', eventHandler);
-                    AppState.eventListeners.push({ element: downloadMenu, eventHandler });
-                }
-            },
+    // API service - COMPLETELY FIXED AND UNIFIED
+    const ApiService = {
+        async processTool(toolSlug, data) {
+            const startTime = Date.now();
+            const outputElement = document.getElementById('output');
+            const processingTimeElement = document.getElementById('processingTime');
 
-            removeEventListeners() {
-                AppState.eventListeners.forEach(({ element, eventHandler }) => {
-                    element.removeEventListener('click', eventHandler);
-                });
-                AppState.eventListeners = [];
-            },
-
-            clearAll() {
-                // Clear all inputs
-                document.querySelectorAll('textarea').forEach(ta => ta.value = '');
-                document.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
-                document.querySelectorAll('input[type="number"]').forEach(input => input.value = input.defaultValue || '');
-
-                // Reset checkboxes and radios to defaults
-                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-                document.querySelectorAll('input[type="radio"]').forEach((radio, index) => {
-                    if (index === 0) radio.checked = true;
-                });
-
-                // Clear output
-                this.clearOutput();
-                Utils.showNotification('All inputs cleared', 'info');
-            },
-
-            clearOutput() {
-                document.getElementById('output').textContent = 'Run the tool to see output...';
-                document.getElementById('output').className = 'p-3 bg-light rounded border';
-                document.getElementById('processingTime').textContent = '';
+            try {
+                AppState.isProcessing = true;
+                outputElement.textContent = 'Processing...';
+                outputElement.className = 'p-3 bg-warning bg-opacity-25 rounded border';
+                processingTimeElement.textContent = '';
                 document.getElementById('additionalInfo').textContent = '';
 
-                // Disable output buttons
-                document.getElementById('copyOutputBtn').disabled = true;
-                document.getElementById('downloadOutputBtn').disabled = true;
-                document.getElementById('saveTool').disabled = true;
-            },
-
-            async copyOutput() {
-                const output = document.getElementById('output').textContent;
-                try {
-                    await navigator.clipboard.writeText(output);
-                    const button = document.getElementById('copyOutputBtn');
-                    const originalText = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
-                    setTimeout(() => {
-                        button.innerHTML = originalText;
-                    }, 2000);
-                    Utils.showNotification('Output copied to clipboard', 'success');
-                } catch (err) {
-                    Utils.showNotification('Failed to copy output', 'error');
-                }
-            },
-
-            downloadOutput() {
-                const output = document.getElementById('output').textContent;
-                const blob = new Blob([output], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `devtools-${AppState.currentTool}-output.txt`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                Utils.showNotification('Output downloaded', 'success');
-            },
-
-            loadSampleData() {
-                const toolSlug = AppState.currentTool;
-                if (!toolSlug) return;
-
-                const samples = {
-                    'json-formatter': '{"name": "DevTools Suite", "tools": 10, "users": 10000, "features": ["JSON Formatter", "JWT Decoder", "Base64 Converter"]}',
-                    'jwt-decoder': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-                    'base64-converter': 'Hello, DevTools Suite! This is sample text for encoding.',
-                    'regex-tester': 'The quick brown fox jumps over the lazy dog.',
-                    'yaml-json-converter': 'name: John Doe\nage: 30\ncity: New York\nhobbies:\n  - reading\n  - hiking\n  - coding',
-                    'url-encoder': 'Hello World & Welcome!',
-                    'timestamp-converter': '1640995200',
-                    'text-diff': 'The quick brown fox\njumps over the lazy dog.',
-                    'markdown-preview': '# Hello World\n\nThis is **bold** and this is *italic*.\n\n- List item 1\n- List item 2\n- List item 3',
-                    'uuid-generator': '5'
-                };
-
-                switch (toolSlug) {
-                    case 'text-diff':
-                        document.getElementById('diffLeft').value = samples[toolSlug];
-                        document.getElementById('diffRight').value = 'The quick brown fox\njumps over the lazy cat.';
-                        break;
-                    case 'regex-tester':
-                        document.getElementById('regexInput').value = samples[toolSlug];
-                        document.getElementById('regexPattern').value = '\\b\\w{4}\\b';
-                        document.getElementById('regexFlags').value = 'g';
-                        break;
-                    case 'uuid-generator':
-                        document.getElementById('uuidCount').value = samples[toolSlug];
-                        break;
-                    default:
-                        const inputElement = document.querySelector('textarea, input[type="text"]');
-                        if (inputElement && samples[toolSlug]) {
-                            inputElement.value = samples[toolSlug];
-                        }
-                        break;
-                }
-
-                Utils.showNotification('Sample data loaded', 'info');
-            },
-
-            async saveSession() {
-                if (!AppState.lastOutput) {
-                    Utils.showNotification('No output to save', 'warning');
-                    return;
-                }
-                Utils.showNotification('Session saving feature coming soon!', 'info');
-            }
-        };
-
-        // Initialize tool
-        function initializeTool() {
-            const toolSlug = '@toolSlug';
-            const config = toolConfig[toolSlug];
-
-            if (config) {
-                AppState.currentTool = toolSlug;
-
-                // Load tool interface
-                const template = document.getElementById(config.template);
-                if (template) {
-                    document.getElementById('toolInterface').innerHTML = template.innerHTML;
-                } else {
-                    document.getElementById('toolInterface').innerHTML = '<div class="alert alert-danger">Tool template not found</div>';
-                    return;
-                }
-
-                // Update descriptions
-                document.getElementById('toolDescription').textContent = config.description;
-                document.getElementById('toolInfoContent').innerHTML = `<p class="text-muted small">${Utils.escapeHtml(config.info)}</p>`;
-
-                // Initialize event listeners
-                EventManager.addEventListeners();
-
-                // Initialize tooltips
-                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                // UNIFIED REQUEST STRUCTURE FOR ALL TOOLS
+                const requestData = Utils.cleanRequestData({
+                    Input: data.input || '',
+                    Input2: data.input2 || '',
+                    Pattern: data.pattern || '',
+                    Flags: data.flags || '',
+                    Encode: data.encode,
+                    Format: data.format,
+                    Validate: data.validate,
+                    ToJson: data.toJson,
+                    Count: data.count,
+                    SaveResult: data.saveResult || false
                 });
 
-                console.log('✅ Tool initialized:', toolSlug);
-            } else {
-                document.getElementById('toolInterface').innerHTML = '<div class="alert alert-danger">Tool configuration not found</div>';
+                console.log('🔍 Sending request to:', toolSlug, requestData);
+
+                const response = await fetch(`/api/tools/${toolSlug}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const responseText = await response.text();
+                let result;
+
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Failed to parse response:', responseText);
+                    throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}`);
+                }
+
+                const processingTime = Date.now() - startTime;
+
+                console.log('🔍 Received response:', result);
+
+                if (!response.ok) {
+                    const errorDetails = result.error || result.message || `HTTP ${response.status}`;
+                    throw new Error(errorDetails);
+                }
+
+                // Handle the API response structure
+                if (result.success) {
+                    const output = result.data?.output || result.output || '';
+                    const additionalData = result.data?.additionalData || result.additionalData;
+
+                    AppState.lastOutput = output;
+
+                    // SPECIAL HANDLING FOR MARKDOWN PREVIEW
+                    if (toolSlug === 'markdown-preview') {
+                        // Check if output contains HTML tags (basic detection)
+                        if (output.includes('<') && output.includes('>')) {
+                            outputElement.innerHTML = output;
+                        } else {
+                            // If no HTML tags, assume it's raw markdown and display as text
+                            outputElement.textContent = output;
+                        }
+                    } else {
+                        // For all other tools, use textContent
+                        outputElement.textContent = output;
+                    }
+
+                    outputElement.className = 'p-3 bg-success bg-opacity-10 rounded border';
+                    processingTimeElement.textContent = `Processed in ${processingTime}ms`;
+
+                    if (additionalData) {
+                        document.getElementById('additionalInfo').textContent = additionalData;
+                    }
+
+                    // Enable output buttons
+                    document.getElementById('copyOutputBtn').disabled = false;
+                    document.getElementById('downloadOutputBtn').disabled = false;
+                    document.getElementById('saveTool').disabled = false;
+
+                    Utils.showNotification('Tool processed successfully', 'success');
+                    return { success: true, output: output, additionalData: additionalData };
+                } else {
+                    const error = result.error || result.message || 'Unknown error occurred';
+                    outputElement.textContent = `Error: ${error}`;
+                    outputElement.className = 'p-3 bg-danger bg-opacity-10 rounded border';
+                    processingTimeElement.textContent = '';
+                    Utils.showNotification(error, 'error');
+                    return { success: false, error: error };
+                }
+            } catch (error) {
+                console.error('💥 Process tool error:', error);
+                outputElement.textContent = `Error: ${error.message}`;
+                outputElement.className = 'p-3 bg-danger bg-opacity-10 rounded border';
+                processingTimeElement.textContent = '';
+                document.getElementById('additionalInfo').textContent = '';
+                Utils.showNotification(error.message, 'error');
+                return { success: false, error: error.message };
+            } finally {
+                AppState.isProcessing = false;
             }
         }
+    };
 
-        // Make functions available globally
-        window.ToolProcessors = ToolProcessors;
-        window.EventManager = EventManager;
+    // Tool processing functions - COMPLETELY FIXED
+    const ToolProcessors = {
+        async processJsonFormatter() {
+            const input = document.getElementById('jsonInput').value;
+            const format = document.getElementById('formatJson').checked;
+            const validate = document.getElementById('validateJson').checked;
+            const button = document.getElementById('processJsonBtn');
 
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeTool();
-        });
+            const config = toolConfig['json-formatter'];
+            const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+            if (error) {
+                Utils.showNotification(error, 'error');
+                return;
+            }
 
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
-            EventManager.removeEventListeners();
-        });
+            Utils.setLoading(button, true);
+            await ApiService.processTool('json-formatter', {
+                input: input,
+                format: format,
+                validate: validate
+            });
+            Utils.setLoading(button, false);
+        },
 
-        console.log('✅ DevTools Suite JavaScript loaded successfully!');
-    </script>
-}
+        async processJwtDecoder() {
+            const input = document.getElementById('jwtInput').value;
+            const button = document.getElementById('processJwtBtn');
+
+            const config = toolConfig['jwt-decoder'];
+            const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+            if (error) {
+                Utils.showNotification(error, 'error');
+                return;
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('jwt-decoder', { input: input });
+            Utils.setLoading(button, false);
+        },
+
+        async processBase64Converter() {
+            const input = document.getElementById('base64Input').value;
+            const action = document.querySelector('input[name="base64Action"]:checked').value;
+            const encode = action === 'encode';
+            const button = document.getElementById('processBase64Btn');
+
+            // Debug the toggle
+            Utils.debugToggleOptions('base64-converter');
+
+            const config = toolConfig['base64-converter'];
+
+            // Only validate if encoding (decoding might have empty input for base64)
+            if (encode) {
+                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+                if (error) {
+                    Utils.showNotification(error, 'error');
+                    return;
+                }
+            } else {
+                // For decoding, still check if input is provided
+                if (!input.trim()) {
+                    Utils.showNotification('Please enter Base64 text to decode', 'error');
+                    return;
+                }
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('base64-converter', {
+                input: input,
+                encode: encode
+            });
+            Utils.setLoading(button, false);
+        },
+
+        async processRegexTester() {
+            const input = document.getElementById('regexInput').value;
+            const pattern = document.getElementById('regexPattern').value;
+            const flags = document.getElementById('regexFlags').value;
+            const button = document.getElementById('processRegexBtn');
+
+            if (!pattern.trim()) {
+                Utils.showNotification('Regex pattern cannot be empty', 'error');
+                return;
+            }
+
+            const config = toolConfig['regex-tester'];
+            if (pattern.length > config.maxPatternLength) {
+                Utils.showNotification(`Pattern too long. Maximum ${config.maxPatternLength} characters allowed.`, 'error');
+                return;
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('regex-tester', {
+                input: input,
+                pattern: pattern,
+                flags: flags
+            });
+            Utils.setLoading(button, false);
+        },
+
+        async processYamlJsonConverter() {
+            const input = document.getElementById('yamlJsonInput').value;
+            const action = document.querySelector('input[name="yamlJsonAction"]:checked').value;
+            const toJson = action === 'to-json';
+            const button = document.getElementById('processYamlJsonBtn');
+
+            // Debug the toggle
+            Utils.debugToggleOptions('yaml-json-converter');
+
+            const config = toolConfig['yaml-json-converter'];
+            const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+            if (error) {
+                Utils.showNotification(error, 'error');
+                return;
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('yaml-json-converter', {
+                input: input,
+                toJson: toJson
+            });
+            Utils.setLoading(button, false);
+        },
+
+        async processUrlEncoder() {
+            const input = document.getElementById('urlInput').value;
+            const action = document.querySelector('input[name="urlAction"]:checked').value;
+            const encode = action === 'encode';
+            const button = document.getElementById('processUrlBtn');
+
+            // Debug the toggle
+            Utils.debugToggleOptions('url-encoder');
+
+            const config = toolConfig['url-encoder'];
+            const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+            if (error) {
+                Utils.showNotification(error, 'error');
+                return;
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('url-encoder', {
+                input: input,
+                encode: encode
+            });
+            Utils.setLoading(button, false);
+        },
+
+        async processTimestampConverter() {
+            const input = document.getElementById('timestampInput').value;
+            const button = document.getElementById('processTimestampBtn');
+
+            // Validate timestamp format if provided
+            if (input.trim()) {
+                // Check if it's a numeric timestamp or a valid date string
+                const isNumeric = /^-?\d+$/.test(input.trim());
+                const isDate = !isNaN(new Date(input).getTime());
+
+                if (!isNumeric && !isDate) {
+                    Utils.showNotification('Invalid timestamp or date format', 'error');
+                    return;
+                }
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('timestamp-converter', {
+                input: input || ''
+            });
+            Utils.setLoading(button, false);
+        },
+
+        async processTextDiff() {
+            const left = document.getElementById('diffLeft').value;
+            const right = document.getElementById('diffRight').value;
+            const button = document.getElementById('processTextDiffBtn');
+
+            if (!left.trim() && !right.trim()) {
+                Utils.showNotification('Please enter text in at least one side', 'error');
+                return;
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('text-diff', {
+                input: left,
+                input2: right
+            });
+            Utils.setLoading(button, false);
+        },
+
+        async processMarkdownPreview() {
+            const input = document.getElementById('markdownInput').value;
+            const button = document.getElementById('processMarkdownBtn');
+
+            const config = toolConfig['markdown-preview'];
+            const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+            if (error) {
+                Utils.showNotification(error, 'error');
+                return;
+            }
+
+            Utils.setLoading(button, true);
+            const result = await ApiService.processTool('markdown-preview', {
+                input: input
+            });
+            Utils.setLoading(button, false);
+
+            // If markdown preview returned plain text, try to render basic markdown
+            if (result.success && result.output && !result.output.includes('<')) {
+                await this.renderBasicMarkdown(result.output);
+            }
+        },
+
+        async renderBasicMarkdown(markdownText) {
+            // Basic markdown rendering for fallback
+            let html = markdownText
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                .replace(/`(.*?)`/gim, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+
+            const outputElement = document.getElementById('output');
+            outputElement.innerHTML = html;
+            Utils.showNotification('Rendered with basic markdown parser', 'info');
+        },
+
+        async processUuidGenerator() {
+            const count = parseInt(document.getElementById('uuidCount').value) || 1;
+            const button = document.getElementById('processUuidBtn');
+
+            if (count < 1 || count > 100) {
+                Utils.showNotification('Count must be between 1 and 100', 'error');
+                return;
+            }
+
+            Utils.setLoading(button, true);
+            await ApiService.processTool('uuid-generator', {
+                count: count
+            });
+            Utils.setLoading(button, false);
+        }
+    };
+
+    // Event management
+    const EventManager = {
+        addEventListeners() {
+            this.removeEventListeners();
+
+            // Tool-specific buttons
+            const toolButtons = {
+                'processJsonBtn': () => ToolProcessors.processJsonFormatter(),
+                'processJwtBtn': () => ToolProcessors.processJwtDecoder(),
+                'processBase64Btn': () => ToolProcessors.processBase64Converter(),
+                'processRegexBtn': () => ToolProcessors.processRegexTester(),
+                'processYamlJsonBtn': () => ToolProcessors.processYamlJsonConverter(),
+                'processUrlBtn': () => ToolProcessors.processUrlEncoder(),
+                'processTimestampBtn': () => ToolProcessors.processTimestampConverter(),
+                'processTextDiffBtn': () => ToolProcessors.processTextDiff(),
+                'processMarkdownBtn': () => ToolProcessors.processMarkdownPreview(),
+                'processUuidBtn': () => ToolProcessors.processUuidGenerator()
+            };
+
+            Object.entries(toolButtons).forEach(([id, handler]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    const eventHandler = (e) => {
+                        e.preventDefault();
+                        handler();
+                    };
+                    element.addEventListener('click', eventHandler);
+                    AppState.eventListeners.push({ element, eventHandler, type: 'click' });
+                }
+            });
+
+            // Global buttons
+            const globalHandlers = {
+                'resetTool': () => this.clearAll(),
+                'saveTool': () => this.saveSession(),
+                'clearOutputBtn': () => this.clearOutput(),
+                'copyOutputBtn': () => this.copyOutput(),
+                'downloadOutputBtn': () => this.downloadOutput(),
+                'loadSampleDataBtn': () => this.loadSampleData(),
+                'clearAllBtn': () => this.clearAll()
+            };
+
+            Object.entries(globalHandlers).forEach(([id, handler]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    const eventHandler = (e) => {
+                        e.preventDefault();
+                        handler();
+                    };
+                    element.addEventListener('click', eventHandler);
+                    AppState.eventListeners.push({ element, eventHandler, type: 'click' });
+                }
+            });
+
+            // Menu items
+            const copyMenu = document.getElementById('copyOutputMenu');
+            if (copyMenu) {
+                const eventHandler = (e) => {
+                    e.preventDefault();
+                    this.copyOutput();
+                };
+                copyMenu.addEventListener('click', eventHandler);
+                AppState.eventListeners.push({ element: copyMenu, eventHandler, type: 'click' });
+            }
+
+            const downloadMenu = document.getElementById('downloadOutputMenu');
+            if (downloadMenu) {
+                const eventHandler = (e) => {
+                    e.preventDefault();
+                    this.downloadOutput();
+                };
+                downloadMenu.addEventListener('click', eventHandler);
+                AppState.eventListeners.push({ element: downloadMenu, eventHandler, type: 'click' });
+            }
+
+            // Input validation for real-time feedback
+            this.addInputValidationListeners();
+        },
+
+        addInputValidationListeners() {
+            // Add input event listeners for real-time character count
+            document.addEventListener('input', (e) => {
+                if (e.target.matches('textarea, input[type="text"]')) {
+                    this.updateCharacterCount(e.target);
+                }
+            });
+        },
+
+        updateCharacterCount(element) {
+            // Remove existing character count display
+            const existingCount = element.parentNode.querySelector('.character-count');
+            if (existingCount) {
+                existingCount.remove();
+            }
+
+            // Add character count display
+            const countText = `${element.value.length} characters`;
+            const countElement = document.createElement('div');
+            countElement.className = 'character-count form-text text-end small mt-1';
+            countElement.textContent = countText;
+
+            element.parentNode.appendChild(countElement);
+        },
+
+        removeEventListeners() {
+            AppState.eventListeners.forEach(({ element, eventHandler, type }) => {
+                element.removeEventListener(type, eventHandler);
+            });
+            AppState.eventListeners = [];
+        },
+
+        clearAll() {
+            // Clear all inputs
+            document.querySelectorAll('textarea').forEach(ta => ta.value = '');
+            document.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                if (input.id === 'uuidCount') {
+                    input.value = '5'; // Reset to default for UUID generator
+                } else {
+                    input.value = input.defaultValue || '';
+                }
+            });
+
+            // Reset checkboxes and radios to defaults
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            document.querySelectorAll('input[type="radio"]').forEach((radio, index) => {
+                if (index === 0) radio.checked = true;
+            });
+
+            // Clear character counts
+            document.querySelectorAll('.character-count').forEach(el => el.remove());
+
+            // Clear output
+            this.clearOutput();
+            Utils.showNotification('All inputs cleared', 'info');
+        },
+
+        clearOutput() {
+            const outputElement = document.getElementById('output');
+            outputElement.textContent = 'Run the tool to see output...';
+            outputElement.className = 'p-3 bg-light rounded border';
+            document.getElementById('processingTime').textContent = '';
+            document.getElementById('additionalInfo').textContent = '';
+
+            // Disable output buttons
+            document.getElementById('copyOutputBtn').disabled = true;
+            document.getElementById('downloadOutputBtn').disabled = true;
+            document.getElementById('saveTool').disabled = true;
+        },
+
+        async copyOutput() {
+            const outputElement = document.getElementById('output');
+            let outputText;
+
+            if (AppState.currentTool === 'markdown-preview' && outputElement.innerHTML !== outputElement.textContent) {
+                // For markdown preview, copy the HTML content as text
+                outputText = outputElement.textContent || outputElement.innerText;
+            } else {
+                outputText = outputElement.textContent;
+            }
+
+            try {
+                await navigator.clipboard.writeText(outputText);
+                const button = document.getElementById('copyOutputBtn');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+                Utils.showNotification('Output copied to clipboard', 'success');
+            } catch (err) {
+                Utils.showNotification('Failed to copy output', 'error');
+            }
+        },
+
+        downloadOutput() {
+            const outputElement = document.getElementById('output');
+            let outputText;
+
+            if (AppState.currentTool === 'markdown-preview' && outputElement.innerHTML !== outputElement.textContent) {
+                outputText = outputElement.textContent || outputElement.innerText;
+            } else {
+                outputText = outputElement.textContent;
+            }
+
+            const blob = new Blob([outputText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `devtools-${AppState.currentTool}-${new Date().getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            Utils.showNotification('Output downloaded', 'success');
+        },
+
+        loadSampleData() {
+            const toolSlug = AppState.currentTool;
+            if (!toolSlug) return;
+
+            const samples = {
+                'json-formatter': '{"name": "DevTools Suite", "tools": 10, "users": 10000, "features": ["JSON Formatter", "JWT Decoder", "Base64 Converter"]}',
+                'jwt-decoder': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+                'base64-converter': 'Hello, DevTools Suite! This is sample text for encoding.',
+                'regex-tester': 'The quick brown fox jumps over the lazy dog.',
+                'yaml-json-converter': 'name: John Doe\nage: 30\ncity: New York\nhobbies:\n  - reading\n  - hiking\n  - coding',
+                'url-encoder': 'Hello World & Welcome!',
+                'timestamp-converter': '1640995200',
+                'text-diff': 'The quick brown fox\njumps over the lazy dog.',
+                'markdown-preview': '# Hello World\n\nThis is **bold** and this is *italic*.\n\n- List item 1\n- List item 2\n- List item 3\n\n`console.log("Hello World");`',
+                'uuid-generator': '5'
+            };
+
+            switch (toolSlug) {
+                case 'text-diff':
+                    document.getElementById('diffLeft').value = samples[toolSlug];
+                    document.getElementById('diffRight').value = 'The quick brown fox\njumps over the lazy cat.';
+                    break;
+                case 'regex-tester':
+                    document.getElementById('regexInput').value = samples[toolSlug];
+                    document.getElementById('regexPattern').value = '\\b\\w{4}\\b';
+                    document.getElementById('regexFlags').value = 'g';
+                    break;
+                case 'uuid-generator':
+                    document.getElementById('uuidCount').value = samples[toolSlug];
+                    break;
+                default:
+                    const inputElement = document.querySelector('textarea, input[type="text"]');
+                    if (inputElement && samples[toolSlug]) {
+                        inputElement.value = samples[toolSlug];
+                    }
+                    break;
+            }
+
+            // Update character counts
+            document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+                if (el.value) {
+                    this.updateCharacterCount(el);
+                }
+            });
+
+            Utils.showNotification('Sample data loaded', 'info');
+        },
+
+        async saveSession() {
+            if (!AppState.lastOutput) {
+                Utils.showNotification('No output to save', 'warning');
+                return;
+            }
+
+            // Check if user is authenticated
+            try {
+                const response = await fetch('/api/user/profile');
+                if (!response.ok) {
+                    Utils.showNotification('Please login to save tool sessions', 'warning');
+                    return;
+                }
+
+                // Save session logic would go here
+                Utils.showNotification('Session saving feature coming soon!', 'info');
+            } catch (error) {
+                Utils.showNotification('Please login to save tool sessions', 'warning');
+            }
+        }
+    };
+
+    // Initialize tool
+    function initializeTool() {
+        const toolSlug = '@toolSlug';
+        const config = toolConfig[toolSlug];
+
+        if (config) {
+            AppState.currentTool = toolSlug;
+
+            // Load tool interface
+            const template = document.getElementById(config.template);
+            if (template) {
+                document.getElementById('toolInterface').innerHTML = template.innerHTML;
+            } else {
+                document.getElementById('toolInterface').innerHTML = '<div class="alert alert-danger">Tool template not found</div>';
+                return;
+            }
+
+            // Update descriptions
+            document.getElementById('toolDescription').textContent = config.description;
+            document.getElementById('toolInfoContent').innerHTML = `<p class="text-muted small">${Utils.escapeHtml(config.info)}</p>`;
+
+            // Initialize event listeners
+            EventManager.addEventListeners();
+
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            console.log('✅ Tool initialized:', toolSlug);
+        } else {
+            document.getElementById('toolInterface').innerHTML = '<div class="alert alert-danger">Tool configuration not found</div>';
+        }
+    }
+
+    // Make functions available globally
+    window.ToolProcessors = ToolProcessors;
+    window.EventManager = EventManager;
+    window.Utils = Utils;
+
+    // Initialize when DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeTool);
+    } else {
+        initializeTool();
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        EventManager.removeEventListeners();
+    });
+
+    console.log('✅ DevTools Suite JavaScript loaded successfully!');
+</script>

@@ -126,6 +126,8 @@ builder.Services.AddAntiforgery(options =>
 });
 
 var app = builder.Build();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+app.Urls.Add($"http://*:{port}");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

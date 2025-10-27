@@ -8,6 +8,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using Ganss.Xss;
+using Newtonsoft.Json.Linq;
 
 namespace DevToolsSuite.Services
 {
@@ -30,8 +31,15 @@ namespace DevToolsSuite.Services
             _htmlSanitizer.AllowedTags.Add("h1");
             _htmlSanitizer.AllowedTags.Add("h2");
             _htmlSanitizer.AllowedTags.Add("h3");
+            _htmlSanitizer.AllowedTags.Add("h4");
+            _htmlSanitizer.AllowedTags.Add("h5");
+            _htmlSanitizer.AllowedTags.Add("h6");
             _htmlSanitizer.AllowedTags.Add("br");
             _htmlSanitizer.AllowedTags.Add("p");
+            _htmlSanitizer.AllowedTags.Add("ul");
+            _htmlSanitizer.AllowedTags.Add("ol");
+            _htmlSanitizer.AllowedTags.Add("li");
+            _htmlSanitizer.AllowedTags.Add("blockquote");
         }
 
         public async Task<ToolResult> ProcessJsonFormatterAsync(string input, bool format, bool validate)
@@ -205,12 +213,12 @@ namespace DevToolsSuite.Services
 
                 foreach (Match match in matches.Cast<Match>())
                 {
-                    output.AppendLine($"Match at position {match.Index}: '{WebUtility.HtmlEncode(match.Value)}'");
+                    output.AppendLine($"Match at position {match.Index}: '{match.Value}'");
                     if (match.Groups.Count > 1)
                     {
                         for (int i = 1; i < match.Groups.Count; i++)
                         {
-                            output.AppendLine($"  Group {i}: '{WebUtility.HtmlEncode(match.Groups[i].Value)}'");
+                            output.AppendLine($"  Group {i}: '{match.Groups[i].Value}'");
                         }
                     }
                     output.AppendLine();
@@ -240,7 +248,7 @@ namespace DevToolsSuite.Services
             }
         }
 
-        public async Task<ToolResult> ProcessYamlJsonConverterAsync(string input, bool toJson)
+        public async Task<ToolResult> ProcessYamlJsonConverterAsync(string input, bool ToJson)
         {
             var startTime = DateTime.UtcNow;
 
@@ -252,40 +260,121 @@ namespace DevToolsSuite.Services
                 if (input.Length > ToolConstants.MaxInputLength)
                     return ToolResult.ErrorResult($"Input too long. Maximum {ToolConstants.MaxInputLength} characters allowed.");
 
-                if (toJson)
+                _logger.LogInformation("YAML/JSON Conversion - Direction: {Direction}, Input length: {Length}",
+                    ToJson ? "YAML→JSON" : "JSON→YAML", input.Length);
+
+                if (ToJson)
                 {
-                    var deserializer = new DeserializerBuilder().Build();
-                    var yamlObject = deserializer.Deserialize(new StringReader(input));
+                    // YAML to JSON conversion
+                    try
+                    {
+                        var deserializer = new DeserializerBuilder()
+                            .IgnoreUnmatchedProperties()
+                            .Build();
 
-                    var serializer = new SerializerBuilder().JsonCompatible().Build();
-                    var json = serializer.Serialize(yamlObject);
+                        using var reader = new StringReader(input);
+                        var yamlObject = deserializer.Deserialize(reader);
 
-                    // Pretty print the JSON
-                    var formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(json), Formatting.Indented);
-                    var processingTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
-                    return ToolResult.SuccessResult(formattedJson, "Converted YAML to JSON", processingTime);
+                        if (yamlObject == null)
+                            return ToolResult.ErrorResult("Invalid YAML: Could not parse input");
+
+                        var serializer = new SerializerBuilder()
+                            .JsonCompatible()
+                            .Build();
+
+                        var json = serializer.Serialize(yamlObject);
+
+                        // Pretty print the JSON
+                        try
+                        {
+                            var formattedJson = JsonConvert.SerializeObject(
+                                JsonConvert.DeserializeObject(json),
+                                Formatting.Indented
+                            );
+                            var processingTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                            return ToolResult.SuccessResult(formattedJson, "Converted YAML to JSON", processingTime);
+                        }
+                        catch (JsonException)
+                        {
+                            // If pretty printing fails, return the raw JSON
+                            var processingTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                            return ToolResult.SuccessResult(json, "Converted YAML to JSON (minified)", processingTime);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "YAML to JSON conversion failed");
+                        return ToolResult.ErrorResult($"Invalid YAML format: {ex.Message}");
+                    }
                 }
                 else
                 {
-                    var jsonObject = JsonConvert.DeserializeObject(input);
-                    if (jsonObject == null)
-                        return ToolResult.ErrorResult("Invalid JSON input");
+                    // JSON to YAML conversion - FIXED VERSION
+                    try
+                    {
+                        _logger.LogInformation("Attempting JSON to YAML conversion");
 
-                    var serializer = new SerializerBuilder()
-                        .WithIndentedSequences()
-                        .Build();
-                    var yaml = serializer.Serialize(jsonObject);
-                    var processingTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
-                    return ToolResult.SuccessResult(yaml, "Converted JSON to YAML", processingTime);
+                        // Use a different approach - parse as JToken first
+                        try
+                        {
+                            var jsonObject = JToken.Parse(input);
+
+                            // Convert JToken to YAML using a custom approach
+                            var yaml = ConvertJTokenToYaml(jsonObject);
+
+                            _logger.LogInformation("JSON to YAML conversion successful");
+
+                            var processingTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                            return ToolResult.SuccessResult(yaml, "Converted JSON to YAML", processingTime);
+                        }
+                        catch (JsonException jex)
+                        {
+                            return ToolResult.ErrorResult($"Invalid JSON format: {jex.Message}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "JSON to YAML conversion failed");
+                        return ToolResult.ErrorResult($"JSON to YAML conversion error: {ex.Message}");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "YAML/JSON conversion failed for input: {Input}", input[..Math.Min(100, input.Length)]);
+                _logger.LogError(ex, "YAML/JSON conversion failed");
                 return ToolResult.ErrorResult($"Conversion error: {ex.Message}");
             }
         }
 
+        // ADD THIS HELPER METHOD to fix the YAML serialization issue
+        private string ConvertJTokenToYaml(JToken token)
+        {
+            var serializer = new SerializerBuilder()
+                .WithIndentedSequences()
+                .DisableAliases()
+                .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
+                .Build();
+
+            // Convert JToken to object that YAML serializer can handle properly
+            object ConvertToken(JToken t)
+            {
+                return t.Type switch
+                {
+                    JTokenType.Object => t.Children<JProperty>()
+                                        .ToDictionary(prop => prop.Name, prop => ConvertToken(prop.Value)),
+                    JTokenType.Array => t.Select(ConvertToken).ToList(),
+                    JTokenType.String => t.Value<string>(),
+                    JTokenType.Integer => t.Value<long>(),
+                    JTokenType.Float => t.Value<double>(),
+                    JTokenType.Boolean => t.Value<bool>(),
+                    JTokenType.Null => null,
+                    _ => t.ToString()
+                };
+            }
+
+            var convertedObject = ConvertToken(token);
+            return serializer.Serialize(convertedObject);
+        }
         public async Task<ToolResult> ProcessUrlEncoderAsync(string input, bool encode)
         {
             var startTime = DateTime.UtcNow;
@@ -409,9 +498,9 @@ namespace DevToolsSuite.Services
                         differences++;
                         output.AppendLine($"Line {lineNum}:");
                         if (leftLine != null)
-                            output.AppendLine($"- {WebUtility.HtmlEncode(leftLine)}");
+                            output.AppendLine($"- {leftLine}");
                         if (rightLine != null)
-                            output.AppendLine($"+ {WebUtility.HtmlEncode(rightLine)}");
+                            output.AppendLine($"+ {rightLine}");
                         output.AppendLine();
                     }
                 }
@@ -509,6 +598,7 @@ namespace DevToolsSuite.Services
                         {
                             html.AppendLine("<ul>");
                             inList = true;
+                            listType = "ul";
                         }
                         html.AppendLine($"<li>{ProcessMarkdownSpans(WebUtility.HtmlEncode(trimmedLine[2..]))}</li>");
                     }
@@ -597,7 +687,6 @@ namespace DevToolsSuite.Services
 
             try
             {
-                // FIXED: Changed from 50 to 100 to match frontend
                 if (count < 1 || count > 100)
                     return ToolResult.ErrorResult($"Count must be between 1 and 100");
 
@@ -666,8 +755,8 @@ namespace DevToolsSuite.Services
                 {
                     UserId = userId,
                     ToolName = toolName,
-                    InputData = input.Length > 1000 ? input[..1000] + "..." : input, // Truncate long inputs
-                    OutputData = output.Length > 5000 ? output[..5000] + "..." : output, // Truncate long outputs
+                    InputData = input.Length > 1000 ? input[..1000] + "..." : input,
+                    OutputData = output.Length > 5000 ? output[..5000] + "..." : output,
                     AdditionalData = additionalData,
                     CreatedAt = DateTime.UtcNow,
                     LastAccessed = DateTime.UtcNow
@@ -722,7 +811,7 @@ namespace DevToolsSuite.Services
                         UniqueUsers = g.Select(u => u.UserId).Distinct().Count(u => u != null),
                         LastUsed = g.Max(u => u.UsedAt),
                         AvgProcessingTime = g.Average(u => u.ProcessingTimeMs),
-                        ErrorCount = 0 // This would need error tracking in the ToolUsage entity
+                        ErrorCount = 0
                     })
                     .ToListAsync();
 
