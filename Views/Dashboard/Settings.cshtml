@@ -1,0 +1,427 @@
+﻿@{
+    ViewData["Title"] = "Settings - DevTools Suite";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Settings Navigation -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="#general" class="list-group-item list-group-item-action border-0 active" data-bs-toggle="list">
+                            <i class="fas fa-cog me-2"></i>General
+                        </a>
+                        <a href="#appearance" class="list-group-item list-group-item-action border-0" data-bs-toggle="list">
+                            <i class="fas fa-palette me-2"></i>Appearance
+                        </a>
+                        <a href="#notifications" class="list-group-item list-group-item-action border-0" data-bs-toggle="list">
+                            <i class="fas fa-bell me-2"></i>Notifications
+                        </a>
+                        <a href="#privacy" class="list-group-item list-group-item-action border-0" data-bs-toggle="list">
+                            <i class="fas fa-shield-alt me-2"></i>Privacy & Security
+                        </a>
+                        <a href="#billing" class="list-group-item list-group-item-action border-0" data-bs-toggle="list">
+                            <i class="fas fa-credit-card me-2"></i>Billing
+                        </a>
+                        <a href="#integrations" class="list-group-item list-group-item-action border-0" data-bs-toggle="list">
+                            <i class="fas fa-plug me-2"></i>Integrations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <!-- Settings Content -->
+            <div class="tab-content">
+                <!-- General Settings -->
+                <div class="tab-pane fade show active" id="general">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="fw-bold mb-0">General Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="generalSettings">
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Language & Region</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="language" class="form-label">Language</label>
+                                                <select class="form-select" id="language">
+                                                    <option value="en" selected>English</option>
+                                                    <option value="es">Spanish</option>
+                                                    <option value="fr">French</option>
+                                                    <option value="de">German</option>
+                                                    <option value="hi">Hindi</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="timezone" class="form-label">Timezone</label>
+                                                <select class="form-select" id="timezone">
+                                                    <option value="utc">UTC</option>
+                                                    <option value="est" selected>EST (Eastern Time)</option>
+                                                    <option value="pst">PST (Pacific Time)</option>
+                                                    <option value="ist">IST (India Standard Time)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Tool Behavior</h6>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="autoSave" checked>
+                                        <label class="form-check-label" for="autoSave">
+                                            Auto-save tool sessions
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="clearOnRun" checked>
+                                        <label class="form-check-label" for="clearOnRun">
+                                            Clear output when running new tool
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="syntaxHighlighting" checked>
+                                        <label class="form-check-label" for="syntaxHighlighting">
+                                            Enable syntax highlighting
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Data Management</h6>
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong>Warning:</strong> These actions are irreversible
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#clearDataModal">
+                                            <i class="fas fa-trash me-2"></i>Clear All Data
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary">
+                                            <i class="fas fa-download me-2"></i>Export Data
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance Settings -->
+                <div class="tab-pane fade" id="appearance">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="fw-bold mb-0">Appearance</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="appearanceSettings">
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Theme</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card theme-option" data-theme="light">
+                                                <div class="card-body text-center p-3">
+                                                    <div class="theme-preview bg-light border rounded mb-2" style="height: 80px;"></div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="theme" id="themeLight" checked>
+                                                        <label class="form-check-label" for="themeLight">
+                                                            Light
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card theme-option" data-theme="dark">
+                                                <div class="card-body text-center p-3">
+                                                    <div class="theme-preview bg-dark border rounded mb-2" style="height: 80px;"></div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="theme" id="themeDark">
+                                                        <label class="form-check-label" for="themeDark">
+                                                            Dark
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card theme-option" data-theme="auto">
+                                                <div class="card-body text-center p-3">
+                                                    <div class="theme-preview bg-gradient border rounded mb-2" style="height: 80px;"></div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="theme" id="themeAuto">
+                                                        <label class="form-check-label" for="themeAuto">
+                                                            System
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Layout</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="sidebarPosition" class="form-label">Sidebar Position</label>
+                                                <select class="form-select" id="sidebarPosition">
+                                                    <option value="left" selected>Left</option>
+                                                    <option value="right">Right</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="toolLayout" class="form-label">Tool Layout</label>
+                                                <select class="form-select" id="toolLayout">
+                                                    <option value="split" selected>Split View</option>
+                                                    <option value="tabbed">Tabbed View</option>
+                                                    <option value="full">Full Screen</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Font & Display</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="fontSize" class="form-label">Font Size</label>
+                                                <select class="form-select" id="fontSize">
+                                                    <option value="small">Small</option>
+                                                    <option value="medium" selected>Medium</option>
+                                                    <option value="large">Large</option>
+                                                    <option value="xlarge">Extra Large</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="fontFamily" class="form-label">Font Family</label>
+                                                <select class="form-select" id="fontFamily">
+                                                    <option value="system" selected>System Font</option>
+                                                    <option value="monospace">Monospace</option>
+                                                    <option value="serif">Serif</option>
+                                                    <option value="sans-serif">Sans-serif</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Settings -->
+                <div class="tab-pane fade" id="notifications">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="fw-bold mb-0">Notification Preferences</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="notificationSettings">
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Email Notifications</h6>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="emailProduct" checked>
+                                        <label class="form-check-label" for="emailProduct">
+                                            Product updates and new features
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="emailSecurity" checked>
+                                        <label class="form-check-label" for="emailSecurity">
+                                            Security and privacy updates
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="emailMarketing">
+                                        <label class="form-check-label" for="emailMarketing">
+                                            Marketing and promotional emails
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="emailNewsletter" checked>
+                                        <label class="form-check-label" for="emailNewsletter">
+                                            Weekly tips and best practices
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">In-App Notifications</h6>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="inAppUpdates" checked>
+                                        <label class="form-check-label" for="inAppUpdates">
+                                            New tool releases and updates
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="inAppTips" checked>
+                                        <label class="form-check-label" for="inAppTips">
+                                            Usage tips and suggestions
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="inAppAchievements">
+                                        <label class="form-check-label" for="inAppAchievements">
+                                            Achievement notifications
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Push Notifications</h6>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Push notifications require browser permission
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pushImportant">
+                                        <label class="form-check-label" for="pushImportant">
+                                            Important announcements
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pushOutage">
+                                        <label class="form-check-label" for="pushOutage">
+                                            Service status and outages
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Save Preferences</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add other tabs (Privacy, Billing, Integrations) with similar structure -->
+                <div class="tab-pane fade" id="privacy">
+                    <!-- Privacy settings content -->
+                </div>
+
+                <div class="tab-pane fade" id="billing">
+                    <!-- Billing settings content -->
+                </div>
+
+                <div class="tab-pane fade" id="integrations">
+                    <!-- Integrations settings content -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clear Data Modal -->
+<div class="modal fade" id="clearDataModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Clear All Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>This action cannot be undone!</strong>
+                </div>
+                <p>This will permanently delete:</p>
+                <ul>
+                    <li>All saved tool sessions</li>
+                    <li>Your usage history</li>
+                    <li>Personal preferences</li>
+                    <li>Custom settings</li>
+                </ul>
+                <p>Are you sure you want to continue?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger">Clear All Data</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Theme selection
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const theme = this.getAttribute('data-theme');
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+
+                // Preview theme change
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            });
+        });
+
+        // Settings form submission
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                submitBtn.disabled = true;
+
+                setTimeout(() => {
+                    // Show success message
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success alert-dismissible fade show mt-3';
+                    alert.innerHTML = `
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Success!</strong> Your settings have been updated.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    this.parentNode.insertBefore(alert, this.nextSibling);
+
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 1500);
+            });
+        });
+
+        // Tab persistence
+        const settingsTabs = document.querySelectorAll('a[data-bs-toggle="list"]');
+        settingsTabs.forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function(e) {
+                localStorage.setItem('activeSettingsTab', e.target.getAttribute('href'));
+            });
+        });
+
+        // Restore active tab
+        const activeTab = localStorage.getItem('activeSettingsTab');
+        if (activeTab) {
+            const tabElement = document.querySelector(`a[href="${activeTab}"]`);
+            if (tabElement) {
+                new bootstrap.Tab(tabElement).show();
+            }
+        }
+    </script>
+}

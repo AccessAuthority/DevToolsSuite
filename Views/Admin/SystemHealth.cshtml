@@ -1,0 +1,187 @@
+﻿@model DevToolsSuite.Models.ViewModels.SystemHealthViewModel
+@{
+    ViewData["Title"] = "System Health";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">System Health</h1>
+            <p class="text-muted">Monitor system performance and status</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-primary" onclick="refreshHealth()">
+                <i class="fas fa-refresh me-2"></i>Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-database fa-2x @(Model.DatabaseStatus ? "text-success" : "text-danger")"></i>
+                    </div>
+                    <h5 class="fw-bold">Database</h5>
+                    <span class="badge @(Model.DatabaseStatus ? "bg-success" : "bg-danger")">
+                        @(Model.DatabaseStatus ? "Healthy" : "Unhealthy")
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-memory fa-2x text-info"></i>
+                    </div>
+                    <h5 class="fw-bold">Memory</h5>
+                    <span class="fw-bold text-info">@Model.MemoryUsage</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold">Active Users</h5>
+                    <span class="fw-bold text-primary">@Model.ActiveUsers</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-clock fa-2x text-warning"></i>
+                    </div>
+                    <h5 class="fw-bold">Uptime</h5>
+                    <span class="fw-bold text-warning">@Model.Uptime.ToString(@"dd\.hh\:mm\:ss")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Metrics -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Performance Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>CPU Usage</span>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress me-2" style="width: 100px; height: 8px;">
+                                        <div class="progress-bar bg-@(Model.CpuUsage < 70 ? "success" : "warning")"
+                                             style="width: @Model.CpuUsage%"></div>
+                                    </div>
+                                    <span class="fw-bold">@Model.CpuUsage%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Memory Usage</span>
+                                <span class="fw-bold text-info">@Model.MemoryUsage</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Server Time</span>
+                                <span class="fw-bold">@Model.ServerTime.ToString("MMM dd, yyyy HH:mm:ss")</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Active Users</span>
+                                <span class="badge bg-primary">@Model.ActiveUsers</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">System Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>ASP.NET Core Version</span>
+                                <span class="badge bg-secondary">8.0</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Environment</span>
+                                <span class="badge bg-info">Production</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Database Provider</span>
+                                <span class="badge bg-success">SQL Server</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Application Version</span>
+                                <span class="badge bg-primary">1.0.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-trash me-2"></i>Clear Cache
+                        </button>
+                        <button class="btn btn-outline-warning">
+                            <i class="fas fa-database me-2"></i>Run Database Maintenance
+                        </button>
+                        <button class="btn btn-outline-info">
+                            <i class="fas fa-file-export me-2"></i>Export Logs
+                        </button>
+                        <button class="btn btn-outline-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Force GC
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function refreshHealth() {
+            location.reload();
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshHealth, 30000);
+    </script>
+}

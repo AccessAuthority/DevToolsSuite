@@ -1,0 +1,248 @@
+﻿@model DevToolsSuite.Models.ViewModels.UserListViewModel
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">User Management</h1>
+            <p class="text-muted">Manage user accounts and subscriptions</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="fas fa-user-plus me-2"></i>Add User
+            </button>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="search" value="@Model.Search" placeholder="Search users by email or name...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="plan">
+                        <option value="">All Plans</option>
+                        <option value="free">Free</option>
+                        <option value="pro">Pro</option>
+                        <option value="team">Team</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="fw-bold mb-0">Users (@Model.TotalCount total)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@user.DisplayName</div>
+                                            <small class="text-muted">@user.Email</small>
+                                            @if (!user.EmailConfirmed)
+                                            {
+                                                <span class="badge bg-warning ms-2">Unverified</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge @GetPlanBadgeClass(user.SubscriptionPlan)">@user.SubscriptionPlan</span>
+                                </td>
+                                <td>
+                                    @if (user.SubscriptionExpiry > DateTime.UtcNow)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Expired</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small>@user.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                </td>
+                                <td>
+                                    <small>@user.LastLogin.ToString("MMM dd, yyyy")</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="editUserPlan('@user.Id', '@user.SubscriptionPlan')">
+                                                    <i class="fas fa-edit me-2"></i>Edit Plan
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="sendMessage('@user.Email')">
+                                                    <i class="fas fa-envelope me-2"></i>Send Message
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#" onclick="deleteUser('@user.Id', '@user.Email')">
+                                                    <i class="fas fa-trash me-2"></i>Delete User
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="User pagination">
+                    <ul class="pagination justify-content-center mt-4">
+                        <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.Page - 1)&search=@Model.Search">Previous</a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Page ? "active" : "")">
+                                <a class="page-link" href="?page=@i&search=@Model.Search">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.Page + 1)&search=@Model.Search">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Plan Modal -->
+<div class="modal fade" id="editPlanModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Edit User Plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPlanForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label for="planSelect" class="form-label">Subscription Plan</label>
+                        <select class="form-select" id="planSelect">
+                            <option value="free">Free</option>
+                            <option value="pro">Pro</option>
+                            <option value="team">Team</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateUserPlan()">Update Plan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function editUserPlan(userId, currentPlan) {
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('planSelect').value = currentPlan.toLowerCase();
+
+            const modal = new bootstrap.Modal(document.getElementById('editPlanModal'));
+            modal.show();
+        }
+
+        async function updateUserPlan() {
+            const userId = document.getElementById('editUserId').value;
+            const plan = document.getElementById('planSelect').value;
+
+            try {
+                const response = await fetch(`/admin/update-user-plan?userId=${userId}&plan=${plan}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Error updating user plan');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating user plan');
+            }
+        }
+
+        function deleteUser(userId, userEmail) {
+            if (confirm(`Are you sure you want to delete user ${userEmail}? This action cannot be undone.`)) {
+                // Implement delete functionality
+                alert('Delete functionality would be implemented here');
+            }
+        }
+
+        function sendMessage(email) {
+            const subject = prompt('Enter message subject:');
+            if (subject) {
+                const body = prompt('Enter message body:');
+                if (body) {
+                    // Implement send message functionality
+                    alert(`Message would be sent to ${email}`);
+                }
+            }
+        }
+    </script>
+}
+
+@functions {
+    private string GetPlanBadgeClass(string? plan)
+    {
+        return plan?.ToLower() switch
+        {
+            "pro" => "bg-primary",
+            "team" => "bg-warning",
+            _ => "bg-secondary"
+        };
+    }
+}

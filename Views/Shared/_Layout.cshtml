@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DevTools Suite</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css" rel="stylesheet">
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <style>
+        :root {
+            --primary-color: #ff0000;
+            --primary-dark: #cc0000;
+            --primary-light: #ff3333;
+            --gradient-primary: linear-gradient(135deg, #ff0000, #ff6b6b);
+        }
+
+        .bg-primary {
+            background: var(--gradient-primary) !important;
+            border: none;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            font-weight: 600;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #cc0000, #ff5252);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+            }
+
+        .border-primary {
+            border-color: var(--primary-color) !important;
+        }
+
+        .nav-pills .nav-link.active {
+            background: var(--gradient-primary);
+            border: none;
+        }
+
+        .tool-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+            .tool-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(255, 0, 0, 0.15);
+                border-color: var(--primary-light);
+            }
+
+        .theme-switch {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+            .theme-switch:hover {
+                background: rgba(255, 0, 0, 0.1);
+            }
+
+        [data-bs-theme="dark"] {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+            [data-bs-theme="dark"] .tool-card {
+                background: #2d2d2d;
+                border-color: #404040;
+            }
+
+            [data-bs-theme="dark"] .navbar-dark {
+                background: #1a1a1a !important;
+            }
+
+        .sticky-header {
+            position: sticky;  
+            top: 0; 
+            z-index: 999;  
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header class="sticky-header">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+                    <i class="fas fa-tools me-2" style="color: #ff0000;"></i>
+                    <span class="">DevTools Suite</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/"> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/tools"> Tools</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/pricing"> Pricing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contact"> Contact</a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item me-2">
+                            <div class="theme-switch" id="themeSwitch" title="Toggle dark mode">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="/dashboard/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                    <li><a class="dropdown-item" href="/dashboard/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/dashboard/billing"><i class="fas fa-credit-card me-2"></i>Billing</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-light me-2" href="/login"><i class="fas fa-sign-in-alt me-1"></i> Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary" href="/register"><i class="fas fa-user-plus me-1"></i> Sign Up</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-dark text-light py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold d-flex align-items-center">
+                        <i class="fas fa-tools me-2" style="color: #ff0000;"></i>
+                        DevTools Suite
+                    </h5>
+                    <p class="text-muted">All your developer tools — unified, secure, and lightning fast on the web.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-muted"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-github fa-lg"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-linkedin fa-lg"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="fw-bold">Product</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/tools" class="text-muted text-decoration-none">All Tools</a></li>
+                        <li><a href="/pricing" class="text-muted text-decoration-none">Pricing</a></li>
+                        <li><a href="/features" class="text-muted text-decoration-none">Features</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="fw-bold">Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/contact" class="text-muted text-decoration-none">Contact</a></li>
+                        <li><a href="/help" class="text-muted text-decoration-none">Help Center</a></li>
+                        <li><a href="/status" class="text-muted text-decoration-none">Status</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="fw-bold">Company</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/about" class="text-muted text-decoration-none">About</a></li>
+                        <li><a href="/blog" class="text-muted text-decoration-none">Blog</a></li>
+                        <li><a href="/careers" class="text-muted text-decoration-none">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="fw-bold">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/privacy" class="text-muted text-decoration-none">Privacy</a></li>
+                        <li><a href="/terms" class="text-muted text-decoration-none">Terms</a></li>
+                        <li><a href="/security" class="text-muted text-decoration-none">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">&copy; 2024 DevTools Suite. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-muted">Made with <i class="fas fa-heart text-danger"></i> for developers</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Theme switching
+        const themeSwitch = document.getElementById('themeSwitch');
+        const themeIcon = themeSwitch.querySelector('i');
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        themeSwitch.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // Initialize highlight.js
+        hljs.highlightAll();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

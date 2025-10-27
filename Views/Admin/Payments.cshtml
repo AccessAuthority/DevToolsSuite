@@ -1,0 +1,198 @@
+﻿@model DevToolsSuite.Models.ViewModels.PaymentListViewModel
+@{
+    ViewData["Title"] = "Payment History";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">Payment History</h1>
+            <p class="text-muted">Manage and monitor payment transactions</p>
+        </div>
+        <div>
+            <span class="fw-bold text-success">Total Revenue: ₹@Model.TotalRevenue</span>
+        </div>
+    </div>
+
+    <!-- Payment Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-primary">@Model.TotalCount</h3>
+                    <p class="text-muted mb-0">Total Payments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-success">₹@Model.TotalRevenue</h3>
+                    <p class="text-muted mb-0">Total Revenue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-warning">@Model.Payments.Count(p => p.PlanId == "pro")</h3>
+                    <p class="text-muted mb-0">Pro Subscriptions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-info">@Model.Payments.Count(p => p.PlanId == "team")</h3>
+                    <p class="text-muted mb-0">Team Subscriptions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="fw-bold mb-0">Payment Transactions</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>User</th>
+                            <th>Plan</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Paid At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model.Payments)
+                        {
+                            <tr>
+                                <td>
+                                    <code class="small">@payment.OrderId</code>
+                                </td>
+                                <td>
+                                    <div class="fw-bold">@payment.UserEmail</div>
+                                </td>
+                                <td>
+                                    <span class="badge @GetPlanBadgeClass(payment.PlanId)">@payment.PlanId</span>
+                                </td>
+                                <td>
+                                    <strong>₹@payment.Amount</strong>
+                                </td>
+                                <td>
+                                    <span class="badge @GetStatusBadgeClass(payment.Status)">@payment.Status</span>
+                                </td>
+                                <td>
+                                    <small>@payment.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                                </td>
+                                <td>
+                                    <small>@(payment.PaidAt?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="viewPaymentDetails('@payment.OrderId')">
+                                                    <i class="fas fa-eye me-2"></i>View Details
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="generateReceipt('@payment.OrderId')">
+                                                    <i class="fas fa-receipt me-2"></i>Generate Receipt
+                                                </a>
+                                            </li>
+                                            @if (payment.Status == "created")
+                                            {
+                                                <li>
+                                                    <a class="dropdown-item text-warning" href="#" onclick="manualVerify('@payment.OrderId')">
+                                                        <i class="fas fa-check-circle me-2"></i>Manual Verify
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Payment pagination">
+                    <ul class="pagination justify-content-center mt-4">
+                        <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.Page - 1)">Previous</a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Page ? "active" : "")">
+                                <a class="page-link" href="?page=@i">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.Page + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function viewPaymentDetails(orderId) {
+            alert(`View payment details for order: ${orderId}`);
+            // Implement payment details view
+        }
+
+        function generateReceipt(orderId) {
+            window.open(`/admin/generate-receipt?orderId=${orderId}`, '_blank');
+        }
+
+        function manualVerify(orderId) {
+            if (confirm(`Manually verify payment for order ${orderId}?`)) {
+                // Implement manual verification
+                alert('Manual verification would be implemented here');
+            }
+        }
+    </script>
+}
+
+@functions {
+    private string GetPlanBadgeClass(string planId)
+    {
+        return planId.ToLower() switch
+        {
+            "pro" => "bg-primary",
+            "team" => "bg-warning",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "paid" => "bg-success",
+            "created" => "bg-warning",
+            "failed" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

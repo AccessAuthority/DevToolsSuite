@@ -1,0 +1,305 @@
+﻿@{
+    ViewData["Title"] = "Billing & Subscription";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Current Plan -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Current Plan</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="fw-bold text-primary" id="currentPlan">Free</h4>
+                            <p class="text-muted mb-0" id="planExpiry">No active subscription</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#upgradeModal">
+                                Upgrade Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Payment History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Plan</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentHistory">
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="text-muted mt-2">Loading payment history...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Billing Information -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Billing Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email</label>
+                        <p class="text-muted" id="billingEmail">Loading...</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Billing Address</label>
+                        <p class="text-muted">Not set</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tax ID</label>
+                        <p class="text-muted">Not set</p>
+                    </div>
+                    <button class="btn btn-outline-primary w-100">
+                        Update Billing Information
+                    </button>
+                </div>
+            </div>
+
+            <!-- Support -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Having issues with billing or subscriptions?</p>
+                    <div class="d-grid gap-2">
+                        <a href="/contact" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope me-2"></i>Contact Support
+                        </a>
+                        <a href="/help/billing" class="btn btn-outline-secondary">
+                            <i class="fas fa-question-circle me-2"></i>Billing FAQ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upgrade Modal -->
+<div class="modal fade" id="upgradeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Upgrade Your Plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-primary h-100">
+                            <div class="card-body text-center p-4">
+                                <h5 class="fw-bold text-primary">Pro</h5>
+                                <div class="price h2 fw-bold my-3">₹299</div>
+                                <p class="text-muted">per month</p>
+                                <ul class="list-unstyled text-start mb-4">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Save tool sessions</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Advanced features</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Dark mode</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Export capabilities</li>
+                                </ul>
+                                <button class="btn btn-primary w-100" onclick="upgradeToPlan('pro')">
+                                    Upgrade to Pro
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-warning h-100">
+                            <div class="card-body text-center p-4">
+                                <h5 class="fw-bold text-warning">Team</h5>
+                                <div class="price h2 fw-bold my-3">₹999</div>
+                                <p class="text-muted">per month</p>
+                                <ul class="list-unstyled text-start mb-4">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Everything in Pro</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Up to 5 team members</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Shared workspaces</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Admin dashboard</li>
+                                </ul>
+                                <button class="btn btn-warning w-100" onclick="upgradeToPlan('team')">
+                                    Upgrade to Team
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBillingInfo();
+            loadPaymentHistory();
+        });
+
+        async function loadBillingInfo() {
+            try {
+                // Simulate API call
+                document.getElementById('currentPlan').textContent = 'Free';
+                document.getElementById('planExpiry').textContent = 'No active subscription';
+                document.getElementById('billingEmail').textContent = 'user@example.com';
+            } catch (error) {
+                console.error('Error loading billing info:', error);
+            }
+        }
+
+        async function loadPaymentHistory() {
+            try {
+                const response = await fetch('/api/payments/history');
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        displayPaymentHistory(result.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading payment history:', error);
+                document.getElementById('paymentHistory').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Unable to load payment history
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function displayPaymentHistory(payments) {
+            if (payments.length === 0) {
+                document.getElementById('paymentHistory').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No payment history found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const html = payments.map(payment => `
+                <tr>
+                    <td>${new Date(payment.createdAt).toLocaleDateString()}</td>
+                    <td><span class="badge bg-primary">${payment.planId}</span></td>
+                    <td>₹${payment.amount}</td>
+                    <td><span class="badge bg-success">${payment.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-receipt me-1"></i>Receipt
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('paymentHistory').innerHTML = html;
+        }
+
+        async function upgradeToPlan(planId) {
+            try {
+                const response = await fetch('/api/payments/create-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planId: planId
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        initiateRazorpayPayment(result.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error creating order:', error);
+                alert('Error initiating payment. Please try again.');
+            }
+        }
+
+        function initiateRazorpayPayment(orderData) {
+            const options = {
+                key: orderData.key,
+                amount: orderData.amount * 100, // Convert to paise
+                currency: orderData.currency,
+                name: "DevTools Suite",
+                description: `Upgrade to ${orderData.planId} Plan`,
+                order_id: orderData.orderId,
+                handler: function (response) {
+                    verifyPayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
+                },
+                prefill: {
+                    email: "user@example.com",
+                },
+                theme: {
+                    color: "#ff0000"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
+
+        async function verifyPayment(paymentId, orderId, signature) {
+            try {
+                const response = await fetch('/api/payments/verify-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentId: paymentId,
+                        orderId: orderId,
+                        signature: signature
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Payment successful! Your plan has been upgraded.');
+                        location.reload();
+                    } else {
+                        alert('Payment verification failed. Please contact support.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error verifying payment:', error);
+                alert('Error verifying payment. Please contact support.');
+            }
+        }
+    </script>
+}

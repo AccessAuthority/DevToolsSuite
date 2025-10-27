@@ -1,0 +1,184 @@
+﻿@model DevToolsSuite.Models.ViewModels.ToolUsageViewModel
+@{
+    ViewData["Title"] = "Tool Usage Statistics";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">Tool Usage Statistics</h1>
+            <p class="text-muted">Analyze tool usage patterns and trends</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportUsageData()">
+                <i class="fas fa-download me-2"></i>Export Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Apply Filter
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <a href="/admin/tool-usage" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-refresh me-2"></i>Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-primary">@Model.TotalUsage</h3>
+                    <p class="text-muted mb-0">Total Tool Uses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-success">@Model.UsageStats.Sum(s => s.UniqueUsers)</h3>
+                    <p class="text-muted mb-0">Unique Users</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-warning">@Model.UsageStats.Count</h3>
+                    <p class="text-muted mb-0">Active Tools</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="fw-bold text-info">@Model.UsageStats.Average(s => s.AvgProcessingTime).ToString("F2")ms</h3>
+                    <p class="text-muted mb-0">Avg Response Time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool Usage Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="fw-bold mb-0">Tool Usage Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tool Name</th>
+                            <th>Usage Count</th>
+                            <th>Unique Users</th>
+                            <th>Avg Response Time</th>
+                            <th>Last Used</th>
+                            <th>Usage %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in Model.UsageStats.OrderByDescending(s => s.UsageCount))
+                        {
+                            var usagePercentage = Model.TotalUsage > 0 ? (stat.UsageCount * 100.0 / Model.TotalUsage) : 0;
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-toolbox text-primary"></i>
+                                        </div>
+                                        <strong>@stat.ToolName</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">@stat.UsageCount</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@stat.UniqueUsers users</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted">@stat.AvgProcessingTime.ToString("F2") ms</span>
+                                </td>
+                                <td>
+                                    <small>@stat.LastUsed.ToString("MMM dd, yyyy HH:mm")</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                            <div class="progress-bar" role="progressbar"
+                                                 style="width: @usagePercentage%; background: #ff0000;">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">@usagePercentage.ToString("F1")%</small>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Chart -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="fw-bold mb-0">Usage Distribution</h5>
+        </div>
+        <div class="card-body">
+            <div id="usageChart">
+                @foreach (var stat in Model.UsageStats.OrderByDescending(s => s.UsageCount).Take(10))
+                {
+                    var usagePercentage = Model.TotalUsage > 0 ? (stat.UsageCount * 100.0 / Model.TotalUsage) : 0;
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-3">
+                            <small class="fw-bold">@stat.ToolName</small>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: @usagePercentage%; background: #ff0000;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <small class="text-muted">@stat.UsageCount (@usagePercentage.ToString("F1")%)</small>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportUsageData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            window.open(`/admin/export-tool-usage?startDate=${startDate}&endDate=${endDate}&format=csv`, '_blank');
+        }
+    </script>
+}

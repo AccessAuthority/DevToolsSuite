@@ -1,0 +1,351 @@
+﻿@{
+    ViewData["Title"] = "Pricing Plans - DevTools Suite";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">Simple, Transparent Pricing</h1>
+        <p class="lead text-muted">Choose the plan that works best for you and your team</p>
+
+        <!-- Billing Toggle -->
+        <div class="d-flex justify-content-center align-items-center mb-4">
+            <span class="me-3">Monthly</span>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="billingToggle" style="width: 3rem; height: 1.5rem;">
+                <label class="form-check-label" for="billingToggle"></label>
+            </div>
+            <span class="ms-3">Yearly <span class="badge bg-success">Save 20%</span></span>
+        </div>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Free Plan -->
+        <div class="col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h5 class="fw-bold text-muted">Free</h5>
+                        <div class="price-display">
+                            <span class="h1 fw-bold">₹0</span>
+                            <span class="text-muted">/month</span>
+                        </div>
+                        <p class="text-muted">Perfect for individual developers and students</p>
+                    </div>
+
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Access to all 10+ core tools
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Basic tool functionality
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Light/Dark theme
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Copy to clipboard
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-muted me-2"></i>
+                            <span class="text-muted">Save tool sessions</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-muted me-2"></i>
+                            <span class="text-muted">Advanced tool features</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-muted me-2"></i>
+                            <span class="text-muted">Team collaboration</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-muted me-2"></i>
+                            <span class="text-muted">Priority support</span>
+                        </li>
+                    </ul>
+
+                    <div class="text-center">
+                        <a href="/register" class="btn btn-outline-primary w-100">
+                            Get Started Free
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="col-lg-4">
+            <div class="card h-100 border-0 shadow-lg position-relative" style="border: 2px solid #ff0000 !important;">
+                <div class="position-absolute top-0 start-50 translate-middle">
+                    <span class="badge bg-primary px-3 py-2">MOST POPULAR</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h5 class="fw-bold">Pro</h5>
+                        <div class="price-display">
+                            <span class="h1 fw-bold">₹299</span>
+                            <span class="text-muted">/month</span>
+                        </div>
+                        <div class="yearly-price d-none">
+                            <span class="h1 fw-bold">₹249</span>
+                            <span class="text-muted">/month</span>
+                            <div class="text-success small">Billed annually (₹2,988)</div>
+                        </div>
+                        <p class="text-muted">For professional developers and power users</p>
+                    </div>
+
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Everything in Free</strong>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Save tool sessions to cloud
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Advanced tool features
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Export results (JSON, TXT)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Unlimited tool history
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Custom themes
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            API access (coming soon)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Priority email support
+                        </li>
+                    </ul>
+
+                    <div class="text-center">
+                        <a href="/register?plan=pro" class="btn btn-primary w-100">
+                            Start Pro Trial
+                        </a>
+                        <small class="text-muted">7-day free trial, no credit card required</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Plan -->
+        <div class="col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h5 class="fw-bold">Team</h5>
+                        <div class="price-display">
+                            <span class="h1 fw-bold">₹999</span>
+                            <span class="text-muted">/month</span>
+                        </div>
+                        <div class="yearly-price d-none">
+                            <span class="h1 fw-bold">₹799</span>
+                            <span class="text-muted">/month</span>
+                            <div class="text-success small">Billed annually (₹9,588)</div>
+                        </div>
+                        <p class="text-muted">For development teams and agencies</p>
+                    </div>
+
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Everything in Pro</strong>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Up to 5 team members
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Shared tool sessions
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Team workspaces
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Admin dashboard
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Usage analytics
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            SSO integration
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Priority phone support
+                        </li>
+                    </ul>
+
+                    <div class="text-center">
+                        <a href="/contact" class="btn btn-outline-primary w-100">
+                            Contact Sales
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enterprise Section -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <div class="card border-0 bg-light">
+                <div class="card-body p-5 text-center">
+                    <h3 class="fw-bold mb-3">Enterprise Grade</h3>
+                    <p class="text-muted mb-4">Need custom solutions for your organization? We've got you covered.</p>
+                    <div class="row text-start">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-primary me-2"></i>
+                                    Unlimited team members
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-primary me-2"></i>
+                                    Custom tool development
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-primary me-2"></i>
+                                    White-label solutions
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-primary me-2"></i>
+                                    Self-hosted deployment
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-primary me-2"></i>
+                                    Dedicated support
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-primary me-2"></i>
+                                    SLA guarantees
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="/contact" class="btn btn-primary btn-lg">
+                            <i class="fas fa-crown me-2"></i>Get Enterprise Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <h3 class="text-center fw-bold mb-4">Frequently Asked Questions</h3>
+            <div class="accordion" id="pricingFAQ">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            Can I change plans later?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            Yes, you can upgrade, downgrade, or cancel your plan at any time. Changes take effect immediately, and we'll prorate any differences.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            Is there a free trial?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            Yes! The Pro plan comes with a 7-day free trial. No credit card required to start. The Free plan is always free with no time limits.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            What payment methods do you accept?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and for Indian customers, we support UPI, Net Banking, and other local payment methods.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            Do you offer discounts for students or nonprofits?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                        <div class="accordion-body">
+                            Yes! We offer 50% discounts for students and educational institutions, and 30% discounts for registered nonprofits. Contact our support team with proof of status.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Billing toggle functionality
+        document.getElementById('billingToggle').addEventListener('change', function(e) {
+            const isYearly = e.target.checked;
+            const monthlyPrices = document.querySelectorAll('.price-display');
+            const yearlyPrices = document.querySelectorAll('.yearly-price');
+
+            if (isYearly) {
+                monthlyPrices.forEach(el => el.classList.add('d-none'));
+                yearlyPrices.forEach(el => el.classList.remove('d-none'));
+            } else {
+                monthlyPrices.forEach(el => el.classList.remove('d-none'));
+                yearlyPrices.forEach(el => el.classList.add('d-none'));
+            }
+        });
+
+        // Add scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+}

@@ -1,0 +1,429 @@
+﻿@{
+    ViewData["Title"] = "All Developer Tools - DevTools Suite";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">Developer Tools Directory</h1>
+        <p class="lead text-muted mb-4">10+ essential tools to streamline your development workflow</p>
+
+        <!-- Search Bar -->
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" id="toolSearch" class="form-control border-start-0" placeholder="Search tools...">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-filter me-1"></i>Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="row g-4" id="toolsGrid">
+        <!-- JSON Formatter -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="formatting json web">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-brackets-curly text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">JSON Formatter</h5>
+                            <span class="badge bg-primary">Most Popular</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Format, validate, and beautify JSON data with syntax highlighting and error detection.</p>
+                    <div class="tool-features mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-check text-success me-1"></i>Syntax highlighting
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Error detection
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Minify/Beautify
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>15k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/json-formatter" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JWT Decoder -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="security web authentication">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-lock text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">JWT Decoder</h5>
+                            <span class="badge bg-success">Security</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Decode and inspect JWT tokens with detailed header and payload visualization.</p>
+                    <div class="tool-features mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-check text-success me-1"></i>Header inspection
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Payload viewer
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Signature info
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>8k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/jwt-decoder" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Base64 Converter -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="encoding conversion">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-code text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Base64 Converter</h5>
+                            <span class="badge bg-info">Encoding</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Encode and decode Base64 strings with support for files and binary data.</p>
+                    <div class="tool-features mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-check text-success me-1"></i>Text encoding
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>File support
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Binary data
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>12k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/base64-converter" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regex Tester -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="text processing advanced">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-asterisk text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Regex Tester</h5>
+                            <span class="badge bg-warning">Advanced</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Test and debug regular expressions with real-time matching and group capture.</p>
+                    <div class="tool-features mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-check text-success me-1"></i>Real-time testing
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Group capture
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Flags support
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>9k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/regex-tester" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YAML/JSON Converter -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="conversion formatting">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-exchange-alt text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">YAML/JSON Converter</h5>
+                            <span class="badge bg-secondary">Converter</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Convert between YAML and JSON formats seamlessly with validation and formatting.</p>
+                    <div class="tool-features mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-check text-success me-1"></i>Bidirectional
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Validation
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Formatting
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>6k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/yaml-json-converter" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Encoder -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="web encoding">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-link text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">URL Encoder</h5>
+                            <span class="badge bg-info">Web</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Encode and decode URL components with full URI support and parameter handling.</p>
+                    <div class="tool-features mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-check text-success me-1"></i>Full URI support
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Parameter encoding
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-check text-success me-1"></i>Component-wise
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>7k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/url-encoder" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add more tools following the same pattern -->
+        <!-- Timestamp Converter -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="time conversion">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-clock text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Timestamp Converter</h5>
+                            <span class="badge bg-secondary">Time</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Convert between timestamps and human-readable dates with multiple format support.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>5k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/timestamp-converter" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Diff -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="text comparison">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-not-equal text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Text Diff</h5>
+                            <span class="badge bg-info">Comparison</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Compare two text documents and highlight differences with line-by-line analysis.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>4k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/text-diff" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Markdown Preview -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="text formatting">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-markdown text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Markdown Preview</h5>
+                            <span class="badge bg-success">Preview</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Preview Markdown in real-time with support for GitHub-flavored markdown.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>3k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/markdown-preview" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UUID Generator -->
+        <div class="col-md-6 col-lg-4 tool-item" data-categories="generator security">
+            <div class="card tool-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                            <i class="fas fa-fingerprint text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">UUID Generator</h5>
+                            <span class="badge bg-warning">Generator</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3">Generate cryptographically secure UUIDs in multiple versions and formats.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="tool-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-chart-line me-1"></i>2k uses today
+                            </small>
+                        </div>
+                        <a href="/tools/uuid-generator" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Use Tool
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="text-center mt-5 pt-5 border-top">
+        <h3 class="fw-bold mb-3">Can't find what you're looking for?</h3>
+        <p class="text-muted mb-4">We're constantly adding new tools. Suggest a tool and we'll build it!</p>
+        <a href="/contact" class="btn btn-primary btn-lg">
+            <i class="fas fa-lightbulb me-2"></i>Suggest a Tool
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tool search functionality
+        document.getElementById('toolSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const toolItems = document.querySelectorAll('.tool-item');
+
+            toolItems.forEach(item => {
+                const toolName = item.querySelector('h5').textContent.toLowerCase();
+                const toolDesc = item.querySelector('p').textContent.toLowerCase();
+                const categories = item.getAttribute('data-categories').toLowerCase();
+
+                if (toolName.includes(searchTerm) || toolDesc.includes(searchTerm) || categories.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all tool cards
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+}

@@ -1,0 +1,1042 @@
+﻿@{
+    ViewData["Title"] = ViewData["ToolName"] + " - DevTools Suite";
+    var toolSlug = ViewData["ToolSlug"] as string;
+    var toolName = ViewData["ToolName"] as string;
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Main Tool Area -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="fw-bold mb-0">@toolName</h4>
+                            <p class="text-muted mb-0" id="toolDescription">Loading tool description...</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" id="saveTool" data-bs-toggle="tooltip" title="Save session" disabled>
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" id="resetTool" data-bs-toggle="tooltip" title="Reset">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" id="copyOutputMenu"><i class="fas fa-copy me-2"></i>Copy Output</a></li>
+                                    <li><a class="dropdown-item" href="#" id="downloadOutputMenu"><i class="fas fa-download me-2"></i>Download</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" id="shareTool"><i class="fas fa-share me-2"></i>Share</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Dynamic Tool Content -->
+                    <div id="toolInterface">
+                        <!-- This will be populated by JavaScript based on the tool -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0">Output</h5>
+                </div>
+                <div class="card-body">
+                    <div class="output-container">
+                        <pre id="output" class="p-3 bg-light rounded border" style="min-height: 200px; max-height: 400px; overflow: auto;">Run the tool to see output...</pre>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span id="processingTime" class="text-muted small"></span>
+                            <span id="additionalInfo" class="text-muted small ms-2"></span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm" id="copyOutputBtn" disabled>
+                                <i class="fas fa-copy me-1"></i>Copy
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" id="downloadOutputBtn" disabled>
+                                <i class="fas fa-download me-1"></i>Download
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" id="clearOutputBtn">
+                                <i class="fas fa-trash me-1"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Tool Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-bold mb-0">About This Tool</h6>
+                </div>
+                <div class="card-body">
+                    <div id="toolInfoContent">
+                        <p class="text-muted small">Loading tool information...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-bold mb-0">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" id="loadSampleDataBtn">
+                            <i class="fas fa-file-alt me-2"></i>Load Sample Data
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" id="clearAllBtn">
+                            <i class="fas fa-broom me-2"></i>Clear All
+                        </button>
+                        <a href="/tools" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-toolbox me-2"></i>Browse All Tools
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tool-specific templates -->
+<script id="jsonFormatterTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">JSON Input</label>
+            <textarea class="form-control font-monospace" id="jsonInput" rows="12" placeholder='Paste your JSON here...&#10;Example: {"name": "John", "age": 30, "city": "New York"}'></textarea>
+            <div class="form-text">Maximum 50,000 characters</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="formatJson" checked>
+                    <label class="form-check-label" for="formatJson">Format/Beautify</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="validateJson" checked>
+                    <label class="form-check-label" for="validateJson">Validate</label>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processJsonBtn">
+                <i class="fas fa-play me-2"></i>Format JSON
+            </button>
+        </div>
+    </div>
+</script>
+
+<script id="jwtDecoderTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">JWT Token</label>
+            <textarea class="form-control font-monospace" id="jwtInput" rows="6" placeholder="Paste your JWT token here..."></textarea>
+            <div class="form-text">Maximum 50,000 characters</div>
+        </div>
+        <div class="alert alert-info">
+            <small><i class="fas fa-info-circle me-2"></i>JWT tokens have three parts: header, payload, and signature, separated by dots.</small>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processJwtBtn">
+                <i class="fas fa-play me-2"></i>Decode JWT
+            </button>
+        </div>
+    </div>
+</script>
+
+<script id="base64ConverterTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Input Text</label>
+            <textarea class="form-control font-monospace" id="base64Input" rows="8" placeholder="Enter text to encode or base64 to decode..."></textarea>
+            <div class="form-text">Maximum 50,000 characters</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="base64Action" id="encodeBase64" value="encode" checked>
+                    <label class="form-check-label" for="encodeBase64">Encode to Base64</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="base64Action" id="decodeBase64" value="decode">
+                    <label class="form-check-label" for="decodeBase64">Decode from Base64</label>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processBase64Btn">
+                <i class="fas fa-play me-2"></i>Process
+            </button>
+        </div>
+    </div>
+</script>
+
+<!-- Regex Tester Template -->
+<script id="regexTesterTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Test Text</label>
+            <textarea class="form-control font-monospace" id="regexInput" rows="6" placeholder="Enter text to test against the regex pattern..."></textarea>
+            <div class="form-text">Maximum 50,000 characters</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Regex Pattern</label>
+                <input type="text" class="form-control font-monospace" id="regexPattern" placeholder="Enter regex pattern (e.g., \b\w+\b)">
+                <div class="form-text">Maximum 1,000 characters</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Flags</label>
+                <input type="text" class="form-control font-monospace" id="regexFlags" placeholder="g, i, m, s (e.g., gi)">
+                <div class="form-text">g=global, i=ignore case, m=multiline, s=singleline</div>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processRegexBtn">
+                <i class="fas fa-play me-2"></i>Test Regex
+            </button>
+        </div>
+    </div>
+</script>
+
+<!-- YAML/JSON Converter Template -->
+<script id="yamlJsonConverterTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Input</label>
+            <textarea class="form-control font-monospace" id="yamlJsonInput" rows="12" placeholder="Enter YAML or JSON data..."></textarea>
+            <div class="form-text">Maximum 50,000 characters</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="yamlJsonAction" id="toJson" value="to-json" checked>
+                    <label class="form-check-label" for="toJson">YAML to JSON</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="yamlJsonAction" id="toYaml" value="to-yaml">
+                    <label class="form-check-label" for="toYaml">JSON to YAML</label>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processYamlJsonBtn">
+                <i class="fas fa-play me-2"></i>Convert
+            </button>
+        </div>
+    </div>
+</script>
+
+<!-- URL Encoder Template -->
+<script id="urlEncoderTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Input Text</label>
+            <textarea class="form-control font-monospace" id="urlInput" rows="6" placeholder="Enter text to encode or URL-encoded text to decode..."></textarea>
+            <div class="form-text">Maximum 50,000 characters</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="urlAction" id="encodeUrl" value="encode" checked>
+                    <label class="form-check-label" for="encodeUrl">Encode URL</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="urlAction" id="decodeUrl" value="decode">
+                    <label class="form-check-label" for="decodeUrl">Decode URL</label>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processUrlBtn">
+                <i class="fas fa-play me-2"></i>Process
+            </button>
+        </div>
+    </div>
+</script>
+
+<!-- Timestamp Converter Template -->
+<script id="timestampConverterTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Timestamp or Date</label>
+            <input type="text" class="form-control font-monospace" id="timestampInput" placeholder="Enter timestamp (seconds/ms) or date string (leave empty for current time)">
+            <div class="form-text">Supports Unix seconds, milliseconds, or date strings</div>
+        </div>
+        <div class="alert alert-info">
+            <small><i class="fas fa-info-circle me-2"></i>Supports Unix timestamps (seconds/milliseconds) and various date formats. Leave empty to show current time.</small>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processTimestampBtn">
+                <i class="fas fa-play me-2"></i>Convert
+            </button>
+        </div>
+    </div>
+</script>
+
+<!-- Text Diff Template -->
+<script id="textDiffTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Left Text</label>
+                <textarea class="form-control font-monospace" id="diffLeft" rows="8" placeholder="Enter original text..."></textarea>
+                <div class="form-text">Maximum 50,000 characters</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Right Text</label>
+                <textarea class="form-control font-monospace" id="diffRight" rows="8" placeholder="Enter modified text..."></textarea>
+                <div class="form-text">Maximum 50,000 characters</div>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processTextDiffBtn">
+                <i class="fas fa-play me-2"></i>Compare Texts
+            </button>
+        </div>
+    </div>
+</script>
+
+<!-- Markdown Preview Template -->
+<script id="markdownPreviewTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Markdown Input</label>
+            <textarea class="form-control font-monospace" id="markdownInput" rows="12" placeholder="Enter Markdown text..."></textarea>
+            <div class="form-text">Maximum 50,000 characters</div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processMarkdownBtn">
+                <i class="fas fa-play me-2"></i>Preview Markdown
+            </button>
+        </div>
+    </div>
+</script>
+
+<!-- UUID Generator Template -->
+<script id="uuidGeneratorTemplate" type="text/template">
+    <div class="tool-interface">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Number of UUIDs to Generate</label>
+            <input type="number" class="form-control" id="uuidCount" min="1" max="100" value="5" placeholder="Enter number between 1 and 100">
+            <div class="form-text">Maximum 100 UUIDs per request</div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary btn-lg" id="processUuidBtn">
+                <i class="fas fa-play me-2"></i>Generate UUIDs
+            </button>
+        </div>
+    </div>
+</script>
+
+@section Scripts {
+    <script>
+        // Enhanced tool configuration with validation
+        const toolConfig = {
+            'json-formatter': {
+                template: 'jsonFormatterTemplate',
+                description: 'Format and validate JSON data with syntax highlighting',
+                info: 'This tool helps you format, validate, and beautify JSON data. It provides syntax highlighting and error detection to ensure your JSON is properly structured.',
+                maxInputLength: 50000,
+                requiresInput: true
+            },
+            'jwt-decoder': {
+                template: 'jwtDecoderTemplate',
+                description: 'Decode and inspect JWT tokens',
+                info: 'Decode JSON Web Tokens (JWT) to inspect their header and payload contents. This is useful for debugging authentication tokens and understanding their structure.',
+                maxInputLength: 50000,
+                requiresInput: true
+            },
+            'base64-converter': {
+                template: 'base64ConverterTemplate',
+                description: 'Encode and decode Base64 strings',
+                info: 'Convert text to Base64 encoding and decode Base64 back to text. Useful for data encoding in URLs, APIs, and various web applications.',
+                maxInputLength: 50000,
+                requiresInput: true
+            },
+            'regex-tester': {
+                template: 'regexTesterTemplate',
+                description: 'Test regular expressions with live matching',
+                info: 'Test and debug regular expressions with real-time matching. See matches, groups, and positions with detailed output.',
+                maxInputLength: 50000,
+                maxPatternLength: 1000,
+                requiresInput: false
+            },
+            'yaml-json-converter': {
+                template: 'yamlJsonConverterTemplate',
+                description: 'Convert between YAML and JSON formats',
+                info: 'Easily convert between YAML and JSON formats. Perfect for configuration files, API development, and data transformation.',
+                maxInputLength: 50000,
+                requiresInput: true
+            },
+            'url-encoder': {
+                template: 'urlEncoderTemplate',
+                description: 'Encode and decode URL components',
+                info: 'URL encode and decode strings to ensure proper formatting for web addresses and API parameters.',
+                maxInputLength: 50000,
+                requiresInput: true
+            },
+            'timestamp-converter': {
+                template: 'timestampConverterTemplate',
+                description: 'Convert between timestamps and human-readable dates',
+                info: 'Convert Unix timestamps to readable dates and vice versa. Supports seconds, milliseconds, and various date formats.',
+                maxInputLength: 100,
+                requiresInput: false
+            },
+            'text-diff': {
+                template: 'textDiffTemplate',
+                description: 'Compare text and find differences',
+                info: 'Compare two text inputs and highlight differences between them. Useful for code reviews, document comparison, and change tracking.',
+                maxInputLength: 50000,
+                requiresInput: false
+            },
+            'markdown-preview': {
+                template: 'markdownPreviewTemplate',
+                description: 'Preview Markdown in real-time',
+                info: 'Write Markdown and see the rendered HTML output in real-time. Perfect for documentation and content creation.',
+                maxInputLength: 50000,
+                requiresInput: true
+            },
+            'uuid-generator': {
+                template: 'uuidGeneratorTemplate',
+                description: 'Generate UUIDs/GUIDs',
+                info: 'Generate random UUIDs (Universally Unique Identifiers) for use in databases, APIs, and distributed systems.',
+                maxInputLength: 0,
+                requiresInput: false
+            }
+        };
+
+        // Application state
+        const AppState = {
+            currentTool: null,
+            isProcessing: false,
+            lastOutput: '',
+            eventListeners: []
+        };
+
+        // Utility functions
+        const Utils = {
+            escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            },
+
+            showNotification(message, type = 'info') {
+                // Remove existing notifications
+                const existingAlert = document.querySelector('.alert-dismissible');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+
+                const alertClass = {
+                    'success': 'alert-success',
+                    'error': 'alert-danger',
+                    'warning': 'alert-warning',
+                    'info': 'alert-info'
+                }[type] || 'alert-info';
+
+                const alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                        ${this.escapeHtml(message)}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+
+                const container = document.querySelector('.container-fluid');
+                container.insertAdjacentHTML('afterbegin', alertHtml);
+            },
+
+            setLoading(button, loading) {
+                if (!button) return;
+
+                if (loading) {
+                    button.disabled = true;
+                    const originalText = button.innerHTML;
+                    button.setAttribute('data-original-text', originalText);
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                } else {
+                    button.disabled = false;
+                    const originalText = button.getAttribute('data-original-text');
+                    if (originalText) {
+                        button.innerHTML = originalText;
+                    }
+                }
+            },
+
+            validateInput(input, maxLength = 50000, required = true) {
+                if (required && (!input || !input.trim())) {
+                    return 'Input cannot be empty';
+                }
+                if (maxLength > 0 && input.length > maxLength) {
+                    return `Input too long. Maximum ${maxLength} characters allowed.`;
+                }
+                return null;
+            }
+        };
+
+        // API service - COMPLETELY FIXED
+        const ApiService = {
+            async processTool(toolSlug, data) {
+                const startTime = Date.now();
+                const outputElement = document.getElementById('output');
+                const processingTimeElement = document.getElementById('processingTime');
+
+                try {
+                    AppState.isProcessing = true;
+                    outputElement.textContent = 'Processing...';
+                    outputElement.className = 'p-3 bg-warning bg-opacity-25 rounded border';
+                    processingTimeElement.textContent = '';
+                    document.getElementById('additionalInfo').textContent = '';
+
+                    // FIXED: Use the new API controller structure
+                    const requestData = {
+                        Input: data.input || '',
+                        Options: {},
+                        SaveResult: data.saveResult || false
+                    };
+
+                    // Add options based on tool type
+                    if (data.encode !== undefined) requestData.Options.encode = data.encode;
+                    if (data.format !== undefined) requestData.Options.format = data.format;
+                    if (data.validate !== undefined) requestData.Options.validate = data.validate;
+                    if (data.toJson !== undefined) requestData.Options.toJson = data.toJson;
+                    if (data.count !== undefined) requestData.Options.count = data.count;
+                    if (data.pattern !== undefined) requestData.Options.pattern = data.pattern;
+                    if (data.flags !== undefined) requestData.Options.flags = data.flags;
+                    if (data.input2 !== undefined) requestData.Options.input2 = data.input2;
+
+                    console.log('🔍 Sending request:', { toolSlug, requestData });
+
+                    const response = await fetch(`/api/tools/${toolSlug}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const responseText = await response.text();
+                    let result;
+
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error('Failed to parse response:', responseText);
+                        throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}`);
+                    }
+
+                    const processingTime = Date.now() - startTime;
+
+                    console.log('🔍 Received response:', result);
+
+                    if (!response.ok) {
+                        const errorDetails = result.error || result.message || `HTTP ${response.status}`;
+                        throw new Error(errorDetails);
+                    }
+
+                    // Handle the new API response structure
+                    if (result.success) {
+                        const output = result.data?.output || result.output || 'Success';
+                        const additionalData = result.data?.additionalData || result.additionalData;
+
+                        AppState.lastOutput = output;
+
+                        // Handle HTML output for markdown preview
+                        if (toolSlug === 'markdown-preview') {
+                            outputElement.innerHTML = output;
+                        } else {
+                            outputElement.textContent = output;
+                        }
+
+                        outputElement.className = 'p-3 bg-success bg-opacity-10 rounded border';
+                        processingTimeElement.textContent = `Processed in ${processingTime}ms`;
+
+                        if (additionalData) {
+                            document.getElementById('additionalInfo').textContent = additionalData;
+                        }
+
+                        // Enable output buttons
+                        document.getElementById('copyOutputBtn').disabled = false;
+                        document.getElementById('downloadOutputBtn').disabled = false;
+                        document.getElementById('saveTool').disabled = false;
+
+                        Utils.showNotification('Tool processed successfully', 'success');
+                    } else {
+                        const error = result.error || result.message || 'Unknown error occurred';
+                        outputElement.textContent = `Error: ${error}`;
+                        outputElement.className = 'p-3 bg-danger bg-opacity-10 rounded border';
+                        processingTimeElement.textContent = '';
+                        Utils.showNotification(error, 'error');
+                    }
+                } catch (error) {
+                    console.error('💥 Process tool error:', error);
+                    outputElement.textContent = `Error: ${error.message}`;
+                    outputElement.className = 'p-3 bg-danger bg-opacity-10 rounded border';
+                    processingTimeElement.textContent = '';
+                    document.getElementById('additionalInfo').textContent = '';
+                    Utils.showNotification(error.message, 'error');
+                } finally {
+                    AppState.isProcessing = false;
+                }
+            }
+        };
+
+        // Tool processing functions - COMPLETELY FIXED
+        const ToolProcessors = {
+            async processJsonFormatter() {
+                const input = document.getElementById('jsonInput').value;
+                const format = document.getElementById('formatJson').checked;
+                const validate = document.getElementById('validateJson').checked;
+                const button = document.getElementById('processJsonBtn');
+
+                const config = toolConfig['json-formatter'];
+                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+                if (error) {
+                    Utils.showNotification(error, 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('json-formatter', {
+                    input: input,
+                    format: format,
+                    validate: validate
+                });
+                Utils.setLoading(button, false);
+            },
+
+            async processJwtDecoder() {
+                const input = document.getElementById('jwtInput').value;
+                const button = document.getElementById('processJwtBtn');
+
+                const config = toolConfig['jwt-decoder'];
+                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+                if (error) {
+                    Utils.showNotification(error, 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('jwt-decoder', { input: input });
+                Utils.setLoading(button, false);
+            },
+
+            async processBase64Converter() {
+                const input = document.getElementById('base64Input').value;
+                const action = document.querySelector('input[name="base64Action"]:checked').value;
+                const encode = action === 'encode';
+                const button = document.getElementById('processBase64Btn');
+
+                const config = toolConfig['base64-converter'];
+                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+                if (error) {
+                    Utils.showNotification(error, 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('base64-converter', {
+                    input: input,
+                    encode: encode
+                });
+                Utils.setLoading(button, false);
+            },
+
+            async processRegexTester() {
+                const input = document.getElementById('regexInput').value;
+                const pattern = document.getElementById('regexPattern').value;
+                const flags = document.getElementById('regexFlags').value;
+                const button = document.getElementById('processRegexBtn');
+
+                if (!pattern.trim()) {
+                    Utils.showNotification('Regex pattern cannot be empty', 'error');
+                    return;
+                }
+
+                const config = toolConfig['regex-tester'];
+                if (pattern.length > config.maxPatternLength) {
+                    Utils.showNotification(`Pattern too long. Maximum ${config.maxPatternLength} characters allowed.`, 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('regex-tester', {
+                    input: input,
+                    pattern: pattern,
+                    flags: flags
+                });
+                Utils.setLoading(button, false);
+            },
+
+            async processYamlJsonConverter() {
+                const input = document.getElementById('yamlJsonInput').value;
+                const action = document.querySelector('input[name="yamlJsonAction"]:checked').value;
+                const toJson = action === 'to-json';
+                const button = document.getElementById('processYamlJsonBtn');
+
+                const config = toolConfig['yaml-json-converter'];
+                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+                if (error) {
+                    Utils.showNotification(error, 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('yaml-json-converter', {
+                    input: input,
+                    toJson: toJson
+                });
+                Utils.setLoading(button, false);
+            },
+
+            async processUrlEncoder() {
+                const input = document.getElementById('urlInput').value;
+                const action = document.querySelector('input[name="urlAction"]:checked').value;
+                const encode = action === 'encode';
+                const button = document.getElementById('processUrlBtn');
+
+                const config = toolConfig['url-encoder'];
+                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+                if (error) {
+                    Utils.showNotification(error, 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('url-encoder', {
+                    input: input,
+                    encode: encode
+                });
+                Utils.setLoading(button, false);
+            },
+
+            async processTimestampConverter() {
+                const input = document.getElementById('timestampInput').value;
+                const button = document.getElementById('processTimestampBtn');
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('timestamp-converter', {
+                    input: input || '' // Allow empty for current time
+                });
+                Utils.setLoading(button, false);
+            },
+
+            async processTextDiff() {
+                const left = document.getElementById('diffLeft').value;
+                const right = document.getElementById('diffRight').value;
+                const button = document.getElementById('processTextDiffBtn');
+
+                if (!left.trim() && !right.trim()) {
+                    Utils.showNotification('Please enter text in at least one side', 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('text-diff', {
+                    input: left,
+                    input2: right
+                });
+                Utils.setLoading(button, false);
+            },
+
+            async processMarkdownPreview() {
+                const input = document.getElementById('markdownInput').value;
+                const button = document.getElementById('processMarkdownBtn');
+
+                const config = toolConfig['markdown-preview'];
+                const error = Utils.validateInput(input, config.maxInputLength, config.requiresInput);
+                if (error) {
+                    Utils.showNotification(error, 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                await ApiService.processTool('markdown-preview', { input: input });
+                Utils.setLoading(button, false);
+            },
+
+            async processUuidGenerator() {
+                const count = parseInt(document.getElementById('uuidCount').value) || 1;
+                const button = document.getElementById('processUuidBtn');
+
+                if (count < 1 || count > 100) {
+                    Utils.showNotification('Count must be between 1 and 100', 'error');
+                    return;
+                }
+
+                Utils.setLoading(button, true);
+                // FIXED: UUID generator now uses the correct parameter structure
+                await ApiService.processTool('uuid-generator', {
+                    input: '', // Required field but empty for UUID generator
+                    count: count
+                });
+                Utils.setLoading(button, false);
+            }
+        };
+
+        // ... [Keep EventManager and initialization code the same] ...
+        // Event management
+        const EventManager = {
+            addEventListeners() {
+                this.removeEventListeners();
+
+                // Tool-specific buttons
+                const toolButtons = {
+                    'processJsonBtn': ToolProcessors.processJsonFormatter,
+                    'processJwtBtn': ToolProcessors.processJwtDecoder,
+                    'processBase64Btn': ToolProcessors.processBase64Converter,
+                    'processRegexBtn': ToolProcessors.processRegexTester,
+                    'processYamlJsonBtn': ToolProcessors.processYamlJsonConverter,
+                    'processUrlBtn': ToolProcessors.processUrlEncoder,
+                    'processTimestampBtn': ToolProcessors.processTimestampConverter,
+                    'processTextDiffBtn': ToolProcessors.processTextDiff,
+                    'processMarkdownBtn': ToolProcessors.processMarkdownPreview,
+                    'processUuidBtn': ToolProcessors.processUuidGenerator
+                };
+
+                Object.entries(toolButtons).forEach(([id, handler]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        const eventHandler = () => handler();
+                        element.addEventListener('click', eventHandler);
+                        AppState.eventListeners.push({ element, eventHandler });
+                    }
+                });
+
+                // Global buttons
+                const globalHandlers = {
+                    'resetTool': this.clearAll,
+                    'saveTool': this.saveSession,
+                    'clearOutputBtn': this.clearOutput,
+                    'copyOutputBtn': this.copyOutput,
+                    'downloadOutputBtn': this.downloadOutput,
+                    'loadSampleDataBtn': this.loadSampleData,
+                    'clearAllBtn': this.clearAll
+                };
+
+                Object.entries(globalHandlers).forEach(([id, handler]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        const eventHandler = () => handler();
+                        element.addEventListener('click', eventHandler);
+                        AppState.eventListeners.push({ element, eventHandler });
+                    }
+                });
+
+                // Menu items
+                const copyMenu = document.getElementById('copyOutputMenu');
+                if (copyMenu) {
+                    const eventHandler = (e) => {
+                        e.preventDefault();
+                        this.copyOutput();
+                    };
+                    copyMenu.addEventListener('click', eventHandler);
+                    AppState.eventListeners.push({ element: copyMenu, eventHandler });
+                }
+
+                const downloadMenu = document.getElementById('downloadOutputMenu');
+                if (downloadMenu) {
+                    const eventHandler = (e) => {
+                        e.preventDefault();
+                        this.downloadOutput();
+                    };
+                    downloadMenu.addEventListener('click', eventHandler);
+                    AppState.eventListeners.push({ element: downloadMenu, eventHandler });
+                }
+            },
+
+            removeEventListeners() {
+                AppState.eventListeners.forEach(({ element, eventHandler }) => {
+                    element.removeEventListener('click', eventHandler);
+                });
+                AppState.eventListeners = [];
+            },
+
+            clearAll() {
+                // Clear all inputs
+                document.querySelectorAll('textarea').forEach(ta => ta.value = '');
+                document.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = input.defaultValue || '');
+
+                // Reset checkboxes and radios to defaults
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+                document.querySelectorAll('input[type="radio"]').forEach((radio, index) => {
+                    if (index === 0) radio.checked = true;
+                });
+
+                // Clear output
+                this.clearOutput();
+                Utils.showNotification('All inputs cleared', 'info');
+            },
+
+            clearOutput() {
+                document.getElementById('output').textContent = 'Run the tool to see output...';
+                document.getElementById('output').className = 'p-3 bg-light rounded border';
+                document.getElementById('processingTime').textContent = '';
+                document.getElementById('additionalInfo').textContent = '';
+
+                // Disable output buttons
+                document.getElementById('copyOutputBtn').disabled = true;
+                document.getElementById('downloadOutputBtn').disabled = true;
+                document.getElementById('saveTool').disabled = true;
+            },
+
+            async copyOutput() {
+                const output = document.getElementById('output').textContent;
+                try {
+                    await navigator.clipboard.writeText(output);
+                    const button = document.getElementById('copyOutputBtn');
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                    }, 2000);
+                    Utils.showNotification('Output copied to clipboard', 'success');
+                } catch (err) {
+                    Utils.showNotification('Failed to copy output', 'error');
+                }
+            },
+
+            downloadOutput() {
+                const output = document.getElementById('output').textContent;
+                const blob = new Blob([output], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `devtools-${AppState.currentTool}-output.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                Utils.showNotification('Output downloaded', 'success');
+            },
+
+            loadSampleData() {
+                const toolSlug = AppState.currentTool;
+                if (!toolSlug) return;
+
+                const samples = {
+                    'json-formatter': '{"name": "DevTools Suite", "tools": 10, "users": 10000, "features": ["JSON Formatter", "JWT Decoder", "Base64 Converter"]}',
+                    'jwt-decoder': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+                    'base64-converter': 'Hello, DevTools Suite! This is sample text for encoding.',
+                    'regex-tester': 'The quick brown fox jumps over the lazy dog.',
+                    'yaml-json-converter': 'name: John Doe\nage: 30\ncity: New York\nhobbies:\n  - reading\n  - hiking\n  - coding',
+                    'url-encoder': 'Hello World & Welcome!',
+                    'timestamp-converter': '1640995200',
+                    'text-diff': 'The quick brown fox\njumps over the lazy dog.',
+                    'markdown-preview': '# Hello World\n\nThis is **bold** and this is *italic*.\n\n- List item 1\n- List item 2\n- List item 3',
+                    'uuid-generator': '5'
+                };
+
+                switch (toolSlug) {
+                    case 'text-diff':
+                        document.getElementById('diffLeft').value = samples[toolSlug];
+                        document.getElementById('diffRight').value = 'The quick brown fox\njumps over the lazy cat.';
+                        break;
+                    case 'regex-tester':
+                        document.getElementById('regexInput').value = samples[toolSlug];
+                        document.getElementById('regexPattern').value = '\\b\\w{4}\\b';
+                        document.getElementById('regexFlags').value = 'g';
+                        break;
+                    case 'uuid-generator':
+                        document.getElementById('uuidCount').value = samples[toolSlug];
+                        break;
+                    default:
+                        const inputElement = document.querySelector('textarea, input[type="text"]');
+                        if (inputElement && samples[toolSlug]) {
+                            inputElement.value = samples[toolSlug];
+                        }
+                        break;
+                }
+
+                Utils.showNotification('Sample data loaded', 'info');
+            },
+
+            async saveSession() {
+                if (!AppState.lastOutput) {
+                    Utils.showNotification('No output to save', 'warning');
+                    return;
+                }
+                Utils.showNotification('Session saving feature coming soon!', 'info');
+            }
+        };
+
+        // Initialize tool
+        function initializeTool() {
+            const toolSlug = '@toolSlug';
+            const config = toolConfig[toolSlug];
+
+            if (config) {
+                AppState.currentTool = toolSlug;
+
+                // Load tool interface
+                const template = document.getElementById(config.template);
+                if (template) {
+                    document.getElementById('toolInterface').innerHTML = template.innerHTML;
+                } else {
+                    document.getElementById('toolInterface').innerHTML = '<div class="alert alert-danger">Tool template not found</div>';
+                    return;
+                }
+
+                // Update descriptions
+                document.getElementById('toolDescription').textContent = config.description;
+                document.getElementById('toolInfoContent').innerHTML = `<p class="text-muted small">${Utils.escapeHtml(config.info)}</p>`;
+
+                // Initialize event listeners
+                EventManager.addEventListeners();
+
+                // Initialize tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                console.log('✅ Tool initialized:', toolSlug);
+            } else {
+                document.getElementById('toolInterface').innerHTML = '<div class="alert alert-danger">Tool configuration not found</div>';
+            }
+        }
+
+        // Make functions available globally
+        window.ToolProcessors = ToolProcessors;
+        window.EventManager = EventManager;
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTool();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            EventManager.removeEventListeners();
+        });
+
+        console.log('✅ DevTools Suite JavaScript loaded successfully!');
+    </script>
+}
