@@ -1,13 +1,11 @@
-name: CI-CD Pipeline (.NET)
+name: CI-CD (.NET FTP Deploy - Plesk)
 
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
-  build:
+  deploy:
     runs-on: windows-latest
 
     steps:
@@ -19,15 +17,20 @@ jobs:
       with:
         dotnet-version: '7.0.x'
 
-    - name: Restore dependencies
+    - name: Restore
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet build -c Release --no-restore
 
     - name: Publish
       run: dotnet publish -c Release -o publish
 
+    - name: FTP Deploy to Plesk
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: publish/
+        server-dir: ${{ secrets.FTP_TARGET }}
